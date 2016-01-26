@@ -27,5 +27,13 @@ class ImageListHandler(object):
                 differenceList.append(element)
         return differenceList
     
+handler = ImageListHandler()
+C = ['IMG_001', 'IMG_002', 'IMG_003']
+D = ['IMG_001', 'IMG_002', 'IMG_003', 'IMG_004', 'IMG_005']
+handler.updateList(C)
+print(handler.getDifference(D))
+handler.emptyList()
+print(handler.getDifference(D))
+    
     
         
