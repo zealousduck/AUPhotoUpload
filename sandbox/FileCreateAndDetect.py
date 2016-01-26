@@ -20,8 +20,7 @@ def directoryPrinter():
         for filename in filenames:
             print(os.path.join(dirname, filename))
         
-
-    
+# Demonstration code   
 directory = 'testdirectory'
 os.chdir(directory)
 fileCreator()
