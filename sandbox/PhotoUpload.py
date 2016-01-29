@@ -60,4 +60,17 @@ class DropboxUploader:
     def simpleBatch(self, localNames):
         self.batchUpload(localNames, localNames)
         return None
-    
+readKey = ""
+readSecret = ""
+readToken = ""
+readFilename = ""
+with open('key.txt', 'r') as keyFile:
+    readKey = keyFile.read()
+with open('secret.txt', 'r') as secretFile:
+    readSecret = secretFile.read()
+with open('token.txt', 'r') as tokenFile:
+    readToken = tokenFile.read()
+with open('photo.txt', 'r') as photoNameFile:
+    readFilename = photoNameFile.read()
+testUpload = DropboxUploader(readKey, readSecret, readToken)
+testUpload.simpleUpload(readFilename)
