@@ -2,6 +2,8 @@
 Created on Jan 26, 2016
 
 @author: patrickstewart
+
+See: https://docs.python.org/2/library/configparser.html
 '''
 
 import ConfigParser
