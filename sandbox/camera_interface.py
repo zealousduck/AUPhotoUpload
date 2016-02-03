@@ -29,23 +29,24 @@ def list_Pictures():
 # Transfers the image of a specific file
 def transfer_Specific():
     print('If you do not Know the number of photo you want, then run the list photos menu option')
-    picNum = input('Enter the number of the picture you wont to Transfer: ')
-    os.system('cd ~/Pictures/meta_new/ && gphoto2 --get-metadata=' + picNum + ' --skip-existing')
+    picNum = raw_input('Enter the number of the picture you wont to Transfer: ')
+    os.system('cd ~/Pictures/meta_new/ && gphoto2 --get-metadata=' + str(picNum) + ' --skip-existing')
     redundancy_checker()
-    os.system('cd ~/Pictures/ && gphoto2 -p ' + picNum + ' --skip-existing')
+    os.system('cd ~/Pictures/ && gphoto2 -p ' + str(picNum) + ' --skip-existing')
     
 # Transfers a range of images    
 def tranfer_Range():
     print('If you do not Know the range of photos you want, then run the list photos menu option')
-    range1 = input('Enter the first number in the range you want to transfer')
-    range2 = input('Enter the second number in the range you want to transfer')
-    os.system('cd ~/Pictures/meta_new/ && gphoto2 --get-metadata=' + range1 + '-' + range2 + ' --skip-existing')
+    range1 = raw_input('Enter the first number in the range you want to transfer: ')
+    range2 = raw_input('Enter the second number in the range you want to transfer: ')
+    os.system('cd ~/Pictures/meta_new/ && gphoto2 --get-metadata=' + str(range1) + '-' + str(range2) + ' --skip-existing')
     redundancy_checker()
-    os.system('cd ~/Pictures/photos && gphoto2 -p ' + range1 + '-' + range2 + ' --skip-existing')
+    os.system('cd ~/Pictures/photos && gphoto2 -p ' + str(range1) + '-' + str(range2) + ' --skip-existing')
 
 # Code to transfer all pictures on the device
 def transfer_ALL():
-    os.system('cd ~/Pictures/meta_new/ && gphoto2 --get-all-metadata --skip-existing')
+    os.system('rm ~/Pictures/new_new/*') # Make sure old "new" images arn't staying around
+    os.system('cd ~/Pictures/meta_new/ && gphoto2 --get-all-metadata --skip-existing --quiet')
     redundancy_checker()
     os.system('cd ~/Pictures/photos && gphoto2 -P --skip-existing')
     
@@ -68,6 +69,7 @@ def error_handler():
 
 # Rudimentary redundancy checker using meta data and diff
 def redundancy_checker():
+    redundancy = True
     # Write information about what files are different and what files are new
     os.system('cd ~/Pictures/ && diff meta_new meta > logs/metadiff.txt')
     os.system('ls ~/Pictures/meta_new > ~/Pictures/logs/metaNew.txt')
@@ -78,10 +80,10 @@ def redundancy_checker():
     
     # Find number of differences in both desired files
     with open("/home/chris/Pictures/logs/numDiff.txt") as diff:
-        diffNum = int(diff.readline())
+        diffNum = diff.readline()
         diff.close()
     with open("/home/chris/Pictures/logs/numNew.txt") as new:
-        newNum = int(new.readline())
+        newNum = new.readline()
         new.close()
     
     # If there are no redundancies
@@ -90,12 +92,14 @@ def redundancy_checker():
         
     # If there are redundancies
     # In this case we refer to diffNum.txt to figure out what to upload    
-    if newNum > diffNum:
+    if newNum != diffNum:
         redundancy = True
         
+    #return redundancy
+    os.system('mv -u ~/Pictures/meta_new/* ~/Pictures/meta/ ') #copy the new meta data into the rest for archiving
+    os.system('ls ~/Pictures/meta > ~/Pictures/logs/meta_Manifest') # A manifest of all uploaded files
     return redundancy
     
-    os.system('cp -u ~/Pictures/meta_new/* ~/Pictures/meta/ ') #copy the new meta data into the rest for archiving
 
 def cli_interface():
     print('Menu: \n')
