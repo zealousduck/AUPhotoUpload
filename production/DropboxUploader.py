@@ -40,6 +40,7 @@ class DropboxUploader:
     
     def setClient(self):
         if self.myAccessToken is not None:
+            print "Authenticating account with Dropbox..."
             self.myClient = dropbox.client.DropboxClient(self.myAccessToken)
             self.clientAccountInfo = self.myClient.account_info()
         return None
@@ -94,21 +95,23 @@ class DropboxUploader:
             name = self.getClientAccountInfo("display_name")
             return name
     
-    #
-    # THE CURRENT VERSION EXPECTS A .TXT file 
-    #
+    # The current version expects a .TXT file named defaultUser.txt with 
+    # The Key on the first line
+    # The Secret on the second line
+    # The Access Token on the third line.
     def main(self, interfaceType = None, inputKey = None, inputSecret = None, inputAccessToken = None):
         if interfaceType is None:
+            print "No Login information provided, running as default user..."
             defaultUser = self.setUserFile("defaultUser.txt")
-            print "No Login information provided, running as default user " + defaultUser
+            print "Account found for user %s." %(defaultUser)
             normOrBatch = ""
-            while (normOrBatch != "Normal" and normOrBatch != "Batch"):
-                normOrBatch = raw_input("Normal or Batch upload? ")
-            if normOrBatch == "Normal":
+            while (normOrBatch != "normal" and normOrBatch != "batch"):
+                normOrBatch = raw_input("Normal or Batch upload? ").lower()
+            if normOrBatch == "normal":
                 simpleFilename = raw_input("Please input filename: ")
-                self.simpleUpload(simpleFilename)
-                if (self.simpleUpload(simpleFilename) == 1):
-                    print "upload successful"
+                successfulUpload = self.simpleUpload(simpleFilename)
+                if (successfulUpload == 1):
+                    print "Upload successful."
             else:
                 print "For a batch upload, please input the prefix that identifies your files."
                 print "For example, to upload img1.jpg img2.jpg and img3.jpg,"
