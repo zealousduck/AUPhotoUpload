@@ -7,12 +7,14 @@ Configurer.py class operates on the designated configuration file to adjust
 '''
 import PhotoUploadConstants as constants
 import ConfigParser
+import os.path
 from shutil import copyfile
 
 class Configurer(object):
 
     def __init__(self):
         self.config = ConfigParser.RawConfigParser()
+        self.fileName = 'photoUpload.cfg'
         pass
     
     def getOption(self, section=None, option=None):
@@ -22,12 +24,25 @@ class Configurer(object):
         return self     # return self to allow call chaining
     
     def revertToDefaults(self):
+        if not os.path.isfile(constants.DEFAULT_CONFIG):
+            self.config.add_section('directories')
+            self.config.add_section('dropboxinfo')
+            self.config.add_section('carddata')
+            self.config.set('directories', 'imagedirectory', '.')   # current
+            self.config.set('dropboxinfo', 'key', 'kpwogxeclcczgmf')
+            self.config.set('dropboxinfo', 'secret', 'tq1fl93eraqbh97')
+            self.config.set('dropboxinfo', 'accesstoken', 'n0d7CWbJI0AAAAAAAAAACHuj83rJmyPJsFveoeZore8O7xctu8NfaC0EwnEiWB7I')
+            self.config.set('carddata', 'recentcardid', 00000000)
+            self.saveSettings('photoUploadDefaults.cfg')
         # copyfile completely replaces the old file
         copyfile(constants.DEFAULT_CONFIG, constants.CONFIG_FILE_NAME)
-    
-    def saveSettings(self):
-        with open(self.fileName, 'wb') as configFile:
+            
+    def saveSettings(self, name=None):
+        if name is None:
+            raise Exception('Configurer.saveSettings():  missing parameter')
+        with open(name, 'wb') as configFile:
             self.config.write(configFile)
+            configFile.close()
             
 if __name__ == '__main__':
     Configurer().revertToDefaults()

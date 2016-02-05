@@ -6,7 +6,7 @@ Handler.py class operates on the designated directory to determine new images
     images to be uploaded by placing the image names in a shared queue.
 '''
 import PhotoUploadConstants as constants
-import ConfigParser
+import PhotoUploadUtility as Utility
 import Uploader
 from multiprocessing import Process, Queue
 import time
@@ -15,11 +15,7 @@ import os
 class Handler(object):
 
     def __init__(self):
-        config = ConfigParser.RawConfigParser()
-        if os.path.isfile(constants.CONFIG_FILE_NAME):
-            config.read(constants.CONFIG_FILE_NAME)
-        else:
-            config.read(constants.DEFAULT_CONFIG)
+        config = Utility.getProjectConfig()
         # Extract relevant config data
         self.directoryName = config.get('directories', 'imagedirectory')
         os.chdir(self.directoryName)
