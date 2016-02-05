@@ -26,7 +26,7 @@ class Supervisor(object):
     def run(self):
         readerProcess = Process(target = self.startReader)
         readerProcess.start()
-        handlerProcess = Process(target = self.startHandler())
+        handlerProcess = Process(target = self.startHandler)
         handlerProcess.start()
         readerProcess.join()
         handlerProcess.join()

@@ -19,16 +19,23 @@ class Handler(object):
         # Extract relevant config data
         self.directoryName = config.get('directories', 'imagedirectory')
         os.chdir(self.directoryName)
+        self.queue = Queue()
         
     def run(self):
         print "Hi, I'm a Handler!"
+        print "Starting Uploader!"
+        uploaderProcess = Process(target = self.startUploader)
+        uploaderProcess.start()
         time.sleep(1.5)
         while True:
             time.sleep(constants.POLL_TIME)
             print "Handler, checking in!"
+        uploaderProcess.join()
     
     def enqueue(self):
         pass
     
     def startUploader(self):
+        uploader = Uploader.Uploader(self.queue)
+        uploader.run()
         pass
