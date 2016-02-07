@@ -88,7 +88,7 @@ class DropboxUploader:
                         dropResponse = "User over data quota (http 507)."
                     print "Upload failed for local file %s, Dropbox replied with: %s" % (localName, dropResponse)
         except IOError as localError:
-            print "Error uploading %s: I/O error(%s): %s" (localName, localError.errno, localError.strerror)
+            print "Error uploading %s: I/O error(%s): %s" % (localName, localError.errno, localError.strerror)
         return fileSuccess
     
     def batchUpload(self, localNames = None, uploadNames = None):
@@ -115,6 +115,7 @@ class DropboxUploader:
         return filesUploaded
     
     def simpleUploadPrompt(self):
+        print "\n[SINGLE UPLOAD]\n"
         simpleFilename = raw_input("Please input filename: ")
         successfulUpload = self.simpleUpload(simpleFilename)
         if (successfulUpload == 1):
@@ -122,18 +123,24 @@ class DropboxUploader:
         return 
     
     def simpleBatchPrompt(self):
+        print "\n[BATCH UPLOAD]\n"
         print "For a batch upload, please input the prefix that identifies your files."
         print "For example, to upload img1.jpg img2.jpg and img3.jpg,"
         print "simply enter img1"
+        print ""
         filenamePrefix =  raw_input("Please input your filename prefix: ")
-        localFiles = [filename for filename in os.listdir('.') \
-            if os.path.isfile(os.path.join(os.path.dirname(os.path.realpath(__file__)),filename)) \
-            and filename.startswith(filenamePrefix)]
+        localFiles = self.getLocalBatchList(filenamePrefix)
         numOfFiles = len(localFiles)
-        print "%s files found." % (numOfFiles,)
-        successfulUploads = self.simpleBatch(localFiles)
-        print "%s of %s files successfully uploaded" % (successfulUploads, numOfFiles)
+        print "%s files found starting with %s." % (numOfFiles, filenamePrefix)
+        if numOfFiles > 0:
+            successfulUploads = self.simpleBatch(localFiles)
+            print "%s of %s files successfully uploaded" % (successfulUploads, numOfFiles)
         return
+    
+    def getLocalBatchList(self, inputPrefix):
+        return [filename for filename in os.listdir('.') \
+            if os.path.isfile(os.path.join(os.path.dirname(os.path.realpath(__file__)),filename)) \
+            and filename.startswith(inputPrefix)]
     
     def fetchDefaultUser(self):
         print "No Login information provided, running as default user..."
@@ -158,15 +165,16 @@ class DropboxUploader:
                     "batch"  : "Batch: Upload a series of files." , \
                     "exit" : "Exit: Exit the program." }    
             while userChoice != "exit":
-                print "[MAIN MENU]"
+                print "\n[MAIN MENU]\n"
                 userChoice = ""
                 while (userChoice not in userChoices):
                     for selection in userChoices:
                         print userChoices[selection]
+                    print ""
                     userChoice = raw_input("Please select a valid input: ").lower()
                     if userChoice not in userChoices:
                         print "Sorry, your input was not a valid selection."
-                        print "[MAIN MENU]"
+                        print "\n[MAIN MENU]\n"
                 if userChoice == "normal":
                     self.simpleUploadPrompt()
                 elif userChoice =="batch":
@@ -176,7 +184,7 @@ class DropboxUploader:
                     return
                 else:
                     pass
-                print "Returning to menu..."
+                print "Returning to main menu...\n"
             
         else:
             pass
