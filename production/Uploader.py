@@ -29,7 +29,7 @@ class Uploader(object):
         time.sleep(1)
         while True:
             time.sleep(constants.POLL_TIME)
-            print "Uploader, checking in!"
+            print "Uploader, checking in! pid:", os.getpid()
     
     def dequeue(self):
         pass

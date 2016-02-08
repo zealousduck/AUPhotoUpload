@@ -29,7 +29,7 @@ class Handler(object):
         time.sleep(1.5)
         while True:
             time.sleep(constants.POLL_TIME)
-            print "Handler, checking in!"
+            print "Handler, checking in! pid:", os.getpid()
         uploaderProcess.join()
     
     def enqueue(self):

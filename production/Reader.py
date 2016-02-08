@@ -21,7 +21,8 @@ class Reader(object):
         print "Hi, I'm a Reader!"
         while True:
             time.sleep(constants.POLL_TIME)
-            print "Reader, checking in!"
+            print "Reader, checking in! pid:", os.getpid()
+            # Plug in actual functionality from prototypes!
             
     
     
