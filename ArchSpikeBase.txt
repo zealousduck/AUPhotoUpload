@@ -1,0 +1,2 @@
+    This branch is intended as a record of the code turned in for the
+Architectural Spike. Changes should NOT be made in this branch.
