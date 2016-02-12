@@ -20,22 +20,46 @@ class Handler(object):
         self.directoryName = config.get('directories', 'imagedirectory')
         os.chdir(self.directoryName)
         self.queue = Queue()
+        self.imageList = []
         
     def run(self):
         print "Hi, I'm a Handler!"
         print "Starting Uploader!"
         uploaderProcess = Process(target = self.startUploader)
         uploaderProcess.start()
-        time.sleep(1.5)
+        print self.directoryName
         while True:
+            with self.getDirectoryList(self.directoryName) as currentList:
+                listToUpload = self.getListDifference(self.imageList, currentList)
+            if not listToUpload:    # empty lists implicitly false
+                for element in listToUpload:
+                    self.enqueue(element)
+            self.imageList = self.getDirectoryList(self.directoryName)
+            print "Current list:", self.imageList
             time.sleep(constants.POLL_TIME)
-            print "Handler, checking in! pid:", os.getpid()
         uploaderProcess.join()
     
-    def enqueue(self):
-        pass
+    def enqueue(self, element=None):
+        if element is None:
+            raise Exception('Handler.enqueue():  missing parameter')
+        self.queue.put(element)
     
     def startUploader(self):
         uploader = Uploader.Uploader(self.queue)
         uploader.run()
-        pass
+
+    def getDirectoryList(self, path=None):
+        if (path is None):
+            return None
+        directoryList = []
+        for item in os.listdir(path):
+            directoryList.append(item)
+        return directoryList
+    
+    def getListDifference(self, oldList, newList):
+        differenceList = []
+        for element in newList:
+            if (element not in oldList): # verify correctness for strings!!!
+                differenceList.append(element)
+        return differenceList
+    
