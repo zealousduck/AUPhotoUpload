@@ -32,7 +32,7 @@ class Uploader(object):
             print "Uploader, checking in! pid:", os.getpid()
     
     def dequeue(self):
-        pass
+        return self.queue.get()
     
     def uploadFile(self):
         pass
