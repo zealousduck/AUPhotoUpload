@@ -45,7 +45,6 @@ class Uploader(object):
             print "Uploader, checking in! pid:", os.getpid()
             if not self.queue.empty():
                 self.uploadBatch()
-            print "Handler Queue Size: ", self.queue
     
     def setApp(self, appKey = None, appSecret = None):
         self.myKey = appKey
