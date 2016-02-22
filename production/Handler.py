@@ -42,7 +42,6 @@ class Handler(object):
     def enqueue(self, element=None):
         if element is None:
             raise Exception('Handler.enqueue():  missing parameter')
-        print element
         self.queue.put(element)
     
     def startUploader(self):
