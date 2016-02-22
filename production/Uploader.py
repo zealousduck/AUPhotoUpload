@@ -22,9 +22,9 @@ class Uploader(object):
         self.queue = q
         config = Utility.getProjectConfig()
         # Extract relevant config data
-        inputKey = config.get("dropbox", "key")
-        inputSecret = config.get("dropbox", "Secret")
-        inputAccessToken = config.get("dropbox", "Token")
+        inputKey = config.get("dropboxinfo", "key")
+        inputSecret = config.get("dropboxinfo", "secret")
+        inputAccessToken = config.get("dropboxinfo", "accesstoken")
         self.directoryName = config.get('directories', 'imagedirectory')
         os.chdir(self.directoryName)
         # INSERT DROPBOX DATA FROM CONFIG HERE
@@ -45,6 +45,7 @@ class Uploader(object):
             print "Uploader, checking in! pid:", os.getpid()
             if not self.queue.empty():
                 self.uploadBatch()
+            print "Handler Queue Size: ", self.queue
     
     def setApp(self, appKey = None, appSecret = None):
         self.myKey = appKey
@@ -79,6 +80,7 @@ class Uploader(object):
     
     def uploadFile(self):
         localName =  self.dequeue()
+        print "uploading ", localName
         try:
             with open(localName, 'rb') as localFile:
                 try:
