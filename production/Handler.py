@@ -18,9 +18,9 @@ class Handler(object):
         config = Utility.getProjectConfig()
         # Extract relevant config data
         self.directoryName = config.get('directories', 'imagedirectory')
-        os.chdir(self.directoryName)
+        
         self.queue = Queue()
-        self.imageList = []
+        self.imageList = self.getDirectoryList(self.directoryName)
         
     def run(self):
         print "Hi, I'm a Handler!"
@@ -29,9 +29,9 @@ class Handler(object):
         uploaderProcess.start()
         print self.directoryName
         while True:
-            with self.getDirectoryList(self.directoryName) as currentList:
-                listToUpload = self.getListDifference(self.imageList, currentList)
-            if not listToUpload:    # empty lists implicitly false
+            currentList = self.getDirectoryList(self.directoryName)
+            listToUpload = self.getListDifference(self.imageList, currentList)
+            if len(listToUpload) != 0:
                 for element in listToUpload:
                     self.enqueue(element)
             self.imageList = self.getDirectoryList(self.directoryName)
