@@ -1,0 +1,10 @@
+o   Fault Tolerance: Handler - output contents of the queue to a text file when
+        Handler is exiting
+o   Kill children processes whenever Supervisor dies
+        - Check for ppid .isalive()
+        - Switch to threading implementation?
+        - Necessary for the toggle!
+        - kill by name
+o   Meet with Wade sometime this or next week
+o   Test the GUI
+o   Get Reader done by the end of the week
