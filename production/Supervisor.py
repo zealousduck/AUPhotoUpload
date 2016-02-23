@@ -28,8 +28,8 @@ class Supervisor(object):
         readerProcess.start()
         handlerProcess = Process(target = self.startHandler)
         handlerProcess.start()
-        readerProcess.join()
-        handlerProcess.join()
+        #readerProcess.join()
+        #handlerProcess.join()
     
 if __name__ == '__main__':
     Supervisor().run()

@@ -29,6 +29,7 @@ class Handler(object):
         uploaderProcess.start()
         print self.directoryName
         while True:
+            print "Handler, checking in! pid:", os.getpid()
             with self.getDirectoryList(self.directoryName) as currentList:
                 listToUpload = self.getListDifference(self.imageList, currentList)
             if not listToUpload:    # empty lists implicitly false
