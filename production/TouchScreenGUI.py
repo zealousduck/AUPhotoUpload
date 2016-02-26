@@ -4,7 +4,7 @@ Created on Jan 25, 2016
 @author: stacypickens
 '''
 from Tkinter import *
-from production.Supervisor import Supervisor
+from Supervisor import Supervisor
 from multiprocessing import Process
 
 class FrontEnd(object):
