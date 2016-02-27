@@ -52,10 +52,10 @@ class Supervisor(object):
                     
                 elif job == "ContinuousUploadKill":
                     print "Killing Processes ... (they may still check in a few more times, this is normal)"
-                    self.handlerQueue.get() #Tells the Handler process to finish
-                    self.readerQueue.get() #Tells the Reader process to finish
-                    handlerProcess.join() #wait for the Handler process to finish
-                    readerProcess.join() #Wait the Reader process to finish
+                    self.handlerQueue.get() #Tells the Handler process to finish.
+                    self.readerQueue.get() #Tells the Reader process to finish.
+                    handlerProcess.join() #Wait for the Handler process to finish.
+                    readerProcess.join() #Wait the Reader process to finish.
                     print "Done killing processes."
                 elif job == "FileExplorer":
                     print "Supervisor handles FileExplorer job here if needed"
