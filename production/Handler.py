@@ -39,10 +39,10 @@ class Handler(object):
             self.imageList = self.getDirectoryList(self.directoryName)
             print "Current list:", self.imageList
             time.sleep(constants.POLL_TIME)
-        print "Handler is exiting!"
-        print "Save the current image queue here!"
-        self.uploadOrders.get()
-        uploaderProcess.join()
+        print "Handler is exiting."
+        # Put actual cleanup/saving code here!
+        self.uploadOrders.get() #Tells the Uploader process to finish
+        uploaderProcess.join() #Waits for the Uploader process to finish
         print "Handler successfully exited."
     
     def enqueue(self, element=None):
