@@ -8,30 +8,65 @@ Supervisor.py is the parent class and entry point for the PhotoUpload
 import PhotoUploadConstants as constants
 import Reader
 import Handler
-from multiprocessing import Process
+import os
+import time
+import TouchScreenGUI as tsgui
+from multiprocessing import Process, Queue
 
 class Supervisor(object):
 
     def __init__(self):
-        pass
+        self.guiQueue = Queue()
+        self.handlerQueue = Queue()
+        self.readerQueue = Queue()
     
     def startReader(self):
-        reader = Reader.Reader()
+        self.readerQueue.put("run")
+        reader = Reader.Reader(self.readerQueue)
         reader.run()
     
     def startHandler(self):
-        handler = Handler.Handler()
+        self.handlerQueue.put("run")
+        handler = Handler.Handler(self.handlerQueue)
         handler.run()
+        
+    def startGUI(self):
+        myGui = tsgui.FrontEnd(self.guiQueue)
+        myGui.run()
     
     def run(self):
-        readerProcess = Process(target = self.startReader)
-        readerProcess.start()
-        handlerProcess = Process(target = self.startHandler)
-        handlerProcess.start()
-        readerProcess.join()
-        handlerProcess.join()
+        print "Supervisor, checking in! pid:", os.getpid()
+        guiProcess = Process(target = self.startGUI)
+        guiProcess.start()
+        handlerProcess = None
+        readerProcess = None
+        while True:
+            if not self.guiQueue.empty():
+                job = self.guiQueue.get()
+                if job == "ContinuousUploadCreate":
+                    handlerProcess = Process(target = self.startHandler)
+                    handlerProcess.start()
+                    
+                    readerProcess = Process(target = self.startReader)
+                    readerProcess.start()
+                    
+                elif job == "ContinuousUploadKill":
+                    print "Killing processeses... (they may still check in a few more times, this is normal)"
+                    self.handlerQueue.get()
+                    self.readerQueue.get()
+                    handlerProcess.join()
+                    readerProcess.join()
+                    print "Done killing processes."
+                elif job == "FileExplorer":
+                    print "Supervisor handles FileExplorer job here if needed"
+                elif job == "Settings":
+                    print "Supervisor handles Settings job here if needed"
+                else:
+                    raise Exception('Supervisor.run:  unexpected object in queue')
+            time.sleep(constants.POLL_TIME)
+        #readerProcess.join()
+        #handlerProcess.join()
     
 if __name__ == '__main__':
     Supervisor().run()
     
-        
