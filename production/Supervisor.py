@@ -51,11 +51,11 @@ class Supervisor(object):
                     readerProcess.start()
                     
                 elif job == "ContinuousUploadKill":
-                    print "Killing processeses... (they may still check in a few more times, this is normal)"
-                    self.handlerQueue.get()
-                    self.readerQueue.get()
-                    handlerProcess.join()
-                    readerProcess.join()
+                    print "Killing Processes ... (they may still check in a few more times, this is normal)"
+                    self.handlerQueue.get() #Tells the Handler process to finish
+                    self.readerQueue.get() #Tells the Reader process to finish
+                    handlerProcess.join() #wait for the Handler process to finish
+                    readerProcess.join() #Wait the Reader process to finish
                     print "Done killing processes."
                 elif job == "FileExplorer":
                     print "Supervisor handles FileExplorer job here if needed"
@@ -64,9 +64,8 @@ class Supervisor(object):
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
             time.sleep(constants.POLL_TIME)
-        #readerProcess.join()
-        #handlerProcess.join()
     
 if __name__ == '__main__':
     Supervisor().run()
     
+        
