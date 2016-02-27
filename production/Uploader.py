@@ -12,14 +12,14 @@ import dropbox
 
 class Uploader(object):
 
-    def __init__(self, q=None):
+    def __init__(self, q=None, orderQueue = None):
         if q is None:
             raise Exception('Uploader.__init__():  missing parameter')
         if not isinstance(q, multiprocessing.queues.Queue):
             raise Exception('Uploader.__init__():  parameter not of type ""')
-        
     
         self.queue = q
+        self.orders = orderQueue
         config = Utility.getProjectConfig()
         # Extract relevant config data
         inputKey = config.get("dropboxinfo", "key")
@@ -40,11 +40,14 @@ class Uploader(object):
     def run(self):
         print "Hi, I'm an Uploader!"
         time.sleep(1)
-        while True:
+        while not self.orders.empty():
             time.sleep(constants.POLL_TIME)
             print "Uploader, checking in! pid:", os.getpid()
             if not self.queue.empty():
                 self.uploadBatch()
+        print "Uploader is exiting."
+        #Do any cleanup here
+        print "Uploader successfully exited."
     
     def setApp(self, appKey = None, appSecret = None):
         self.myKey = appKey
