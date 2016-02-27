@@ -46,7 +46,7 @@ class Uploader(object):
             if not self.queue.empty():
                 self.uploadBatch()
         print "Uploader is exiting."
-        #Do any cleanup here
+        # Put actual cleanup/saving code here!
         print "Uploader successfully exited."
     
     def setApp(self, appKey = None, appSecret = None):
