@@ -25,7 +25,7 @@ class Reader(object):
             print "Reader, checking in! pid:", os.getpid()
             # Plug in actual functionality from prototypes!
         print "Reader is exiting."
-        
+        # Put actual cleanup/saving code here!
         print "Reader successfully exited."
     
     
