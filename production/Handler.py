@@ -11,6 +11,8 @@ import Uploader
 from multiprocessing import Process, Queue
 import time
 import os
+import datetime
+import subprocess
 
 class Handler(object):
 
@@ -34,8 +36,10 @@ class Handler(object):
             currentList = self.getDirectoryList(self.directoryName)
             listToUpload = self.getListDifference(self.imageList, currentList)
             if len(listToUpload) != 0:
+                #listToUpload = self.renameListWithTimestamps(listToUpload)
                 for element in listToUpload:
-                    self.enqueue(element)
+                    
+                    self.enqueue(self.renameWithTimestamp(element))
             self.imageList = self.getDirectoryList(self.directoryName)
             print "Current list:", self.imageList
             time.sleep(constants.POLL_TIME)
@@ -68,4 +72,28 @@ class Handler(object):
             if (element not in oldList): # verify correctness for strings!!!
                 differenceList.append(element)
         return differenceList
+    
+    def renameListWithTimestamps(self, oldList):
+        newList = []
+        for element in oldList:
+            newList.append(self.renameWithTimestamp(element))
+        return newList
+    
+    def renameWithTimestamp(self, name):
+        i = str(datetime.datetime.now())
+        # Convert '2016-02-08 11:16:04.123456 format to nicer filename
+        timeStamp = i[0:10] + '-' + i[11:13] + '-' + i[14:16] + '-' + i[17:19]
+        renameFail = True
+        counter = 0
+        counterExtension = ''
+        while renameFail:
+            try:
+                newName = (timeStamp + counterExtension + '.jpg')
+                subprocess.call(['mv', (self.directoryName + '/' + name), (self.directoryName + '/' + newName)])
+                renameFail = False
+            except OSError:
+                counter += 1
+                counterExtension = str('-' + counter) 
+        return newName
+
     
