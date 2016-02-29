@@ -46,7 +46,6 @@ class Supervisor(object):
             
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
-        self.guiQueue.put("ContinuousUploadCreate")     #TEMPORARY WORKAROUND FOR GUIPROCESS BUG
         handlerProcess = None
         readerProcess = None
         while True:
