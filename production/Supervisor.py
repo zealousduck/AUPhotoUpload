@@ -6,12 +6,14 @@ Supervisor.py is the parent class and entry point for the PhotoUpload
     Direct child processes: Reader, Handler
 '''
 import PhotoUploadConstants as constants
+import PhotoUploadUtility as utility
 import Reader
 import Handler
 import os
 import time
 import TouchScreenGUI as tsgui
 from multiprocessing import Process, Queue
+import subprocess
 
 class Supervisor(object):
 
@@ -36,8 +38,15 @@ class Supervisor(object):
     
     def run(self):
         print "Supervisor, checking in! pid:", os.getpid()
+        # If image directory does not exist yet, create it!
+        config = utility.getProjectConfig()
+        imgdir = config.get('directories','imagedirectory')
+        if not os.path.isdir(imgdir):
+            subprocess.call(['mkdir', imgdir])  # os.mkdir might also work
+            
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
+        self.guiQueue.put("ContinuousUploadCreate")     #TEMPORARY WORKAROUND FOR GUIPROCESS BUG
         handlerProcess = None
         readerProcess = None
         while True:
