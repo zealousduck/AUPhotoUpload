@@ -11,18 +11,21 @@ import os
 
 class Reader(object):
 
-    def __init__(self):
+    def __init__(self, orders):
         config = Utility.getProjectConfig()
+        self.myOrders = orders
         # Extract relevant config data
         self.directoryName = config.get('directories', 'imagedirectory')
         os.chdir(self.directoryName)
     
     def run(self):
         print "Hi, I'm a Reader!"
-        while True:
+        while not self.myOrders.empty():
             time.sleep(constants.POLL_TIME)
             print "Reader, checking in! pid:", os.getpid()
             # Plug in actual functionality from prototypes!
-            
+        print "Reader is exiting."
+        # Put actual cleanup/saving code here!
+        print "Reader successfully exited."
     
     

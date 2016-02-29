@@ -14,21 +14,23 @@ import os
 
 class Handler(object):
 
-    def __init__(self):
+    def __init__(self, orderQueue):
         config = Utility.getProjectConfig()
         # Extract relevant config data
         self.directoryName = config.get('directories', 'imagedirectory')
-        
+        self.orders = orderQueue
+        self.uploadOrders = Queue()
         self.queue = Queue()
         self.imageList = self.getDirectoryList(self.directoryName)
         
     def run(self):
         print "Hi, I'm a Handler!"
         print "Starting Uploader!"
+        self.uploadOrders.put("run")
         uploaderProcess = Process(target = self.startUploader)
         uploaderProcess.start()
         print self.directoryName
-        while True:
+        while not self.orders.empty():
             currentList = self.getDirectoryList(self.directoryName)
             listToUpload = self.getListDifference(self.imageList, currentList)
             if len(listToUpload) != 0:
@@ -37,7 +39,11 @@ class Handler(object):
             self.imageList = self.getDirectoryList(self.directoryName)
             print "Current list:", self.imageList
             time.sleep(constants.POLL_TIME)
-        uploaderProcess.join()
+        print "Handler is exiting."
+        # Put actual cleanup/saving code here!
+        self.uploadOrders.get() #Tells the Uploader process to finish
+        uploaderProcess.join() #Waits for the Uploader process to finish
+        print "Handler successfully exited."
     
     def enqueue(self, element=None):
         if element is None:
@@ -45,7 +51,7 @@ class Handler(object):
         self.queue.put(element)
     
     def startUploader(self):
-        uploader = Uploader.Uploader(self.queue)
+        uploader = Uploader.Uploader(self.queue, self.uploadOrders)
         uploader.run()
 
     def getDirectoryList(self, path=None):
