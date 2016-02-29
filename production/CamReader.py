@@ -5,7 +5,6 @@ Created on Feb 28, 2016
 '''
 import subprocess as sb
 import os
-from threading import Timer
 
 class CamReader(object):
     '''
@@ -36,6 +35,12 @@ class CamReader(object):
         self.curPID = os.getpid(); #Use this pid to toggle off. Using kill.
         #print self.curPID;
     
+    def toggle_off(self):
+        try:
+            sb.check_output(["kill", self.curPID], self.shell);
+        except sb.CalledProcessError:
+                self.toggle_off() #run intill dead
+
 #main test
 read = CamReader();
 read.wait_event_download();
