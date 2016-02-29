@@ -21,9 +21,11 @@ class UploadWorker(Process):
         
     def run(self):
         print "Worker started."
-        for data in iter(self.dequeue, None):
+        data = self.dequeue()
+        while data is not None:
             self.localName = data
             self.peonUpload()
+            data = self.dequeue()
         print "Worker exiting..."
         
     def dequeue(self):
@@ -153,10 +155,11 @@ class Uploader(object):
             for i in range(4):
                 managedQueue.put(None)
             #self.uploadFile(self.dequeue())
+            time.sleep(3)
             while not managedQueue.empty():
                 time.sleep(3)
                 print "Waiting for uploads to finish..."
-            print "Batch Upload finished..."
             while not failQueue.empty():
+                print "Failed image upload: "
                 print failQueue.get()
-            
+            print "Batch Upload finished..."
