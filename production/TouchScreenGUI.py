@@ -6,6 +6,7 @@ Created on Jan 25, 2016
 import os
 from multiprocessing import Queue
 
+
 class FrontEnd(object):
     
     def __init__(self, sQueue):
