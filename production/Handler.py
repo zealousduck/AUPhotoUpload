@@ -11,6 +11,8 @@ import Uploader
 from multiprocessing import Process, Queue
 import time
 import os
+import datetime
+import subprocess
 
 class Handler(object):
 
@@ -34,8 +36,9 @@ class Handler(object):
             currentList = self.getDirectoryList(self.directoryName)
             listToUpload = self.getListDifference(self.imageList, currentList)
             if len(listToUpload) != 0:
-                for element in listToUpload:
-                    self.enqueue(element)
+                for element in listToUpload:  
+                    self.enqueue(self.renameWithTimestamp(element)) # rename and submit the renamed image name
+                    #self.enqueue(element)
             self.imageList = self.getDirectoryList(self.directoryName)
             print "Current list:", self.imageList
             time.sleep(constants.POLL_TIME)
@@ -68,4 +71,29 @@ class Handler(object):
             if (element not in oldList): # verify correctness for strings!!!
                 differenceList.append(element)
         return differenceList
+    
+    def renameWithTimestamp(self, name):
+        time.sleep(1) # I HAVE NO CLUE WHY MY DUPLICATE CHECKING IS FAILING!!!
+        i = str(datetime.datetime.now())
+        # Convert '2016-02-08 11:16:04.123456 format to nicer filename
+        timeStamp = i[0:10] + '-' + i[11:13] + '-' + i[14:16] + '-' + i[17:19]
+        ''' # Nonfunctional duplicate-checking code...
+        renameFail = True
+        counter = 0
+        counterExtension = ''
+        while renameFail:
+            newName = (timeStamp + counterExtension + '.jpg')
+            newPath = (self.directoryName + '/' + newName)
+            if not os.path.isfile(newPath):
+                subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
+                renameFail = False
+            else:
+                counter += 1
+                counterExtension = str('-' + counter) 
+        '''
+        newName = (timeStamp + '.jpg')
+        newPath = (self.directoryName + '/' + newName)
+        subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
+        return newName
+
     
