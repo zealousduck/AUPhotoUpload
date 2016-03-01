@@ -67,9 +67,3 @@ class FrontEnd(object):
     def Settings(self, event):
         print("Test for script to settings")
         self.queue.put("Settings")
-
-        
-if __name__ == '__main__':
-    blah = Queue()
-    FrontEnd().run(blah)
-  
