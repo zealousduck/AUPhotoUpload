@@ -10,6 +10,7 @@ import os
 import time
 import dropbox
 from multiprocessing import Process, Queue
+from Queue import Empty
 
 class UploadWorker(Process):
     def __init__(self, workQueue,failQueue, inMyClient):
@@ -119,7 +120,7 @@ class Uploader(object):
         requiredItem = None
         try:
             requiredItem = self.queue.get_nowait()
-        except queue.Empty:
+        except Empty:
             requiredItem = None 
         return requiredItem
     
@@ -132,12 +133,7 @@ class Uploader(object):
                 try:
                     self.myClient.put_file(str('/' + localName), localFile)
                 except dropbox.rest.ErrorResponse as myError:
-                    dropResponse = ""
-                    if myError.status == 400:
-                        dropResponse = "Bad Request (http 400)."
-                    elif myError.status == 507:
-                        dropResponse = "User over data quota (http 507)."
-                    print "Upload failed for local file %s, Dropbox replied with: %s" % (localName, dropResponse)
+                    print "Upload failed for local file %s, Dropbox replied with: %s" % (localName, myError.body)
         except IOError as localError:
             print "Error uploading %s: I/O error(%s): %s" % (localName, localError.errno, localError.strerror)
     
@@ -147,19 +143,27 @@ class Uploader(object):
             print "Starting Batch of " + str(numUploads) + " images."
             managedQueue = Queue()
             failQueue = Queue()
-            for i in range(4):
+            numWorkers = 0
+            for workerCount in range(4):
                 UploadWorker(managedQueue,failQueue,self.myClient).start()
+                numWorkers = workerCount
+                
+            print str(numWorkers) + " workers started." 
             while numUploads > 0:
                 managedQueue.put(self.queue.get())
                 numUploads = numUploads - 1
-            for i in range(4):
+                
+            for workerCount in range(4):
                 managedQueue.put(None)
+                numWorkers = workerCount
             #self.uploadFile(self.dequeue())
-            time.sleep(3)
+            time.sleep(constants.POLL_TIME) # The .empty() method is instantaneously unreliable after emptying a queue 
             while not managedQueue.empty():
-                time.sleep(3)
+                time.sleep(constants.POLL_TIME)
                 print "Waiting for uploads to finish..."
+            print str(numWorkers) + " workers ended."
             while not failQueue.empty():
-                print "Failed image upload: "
-                print failQueue.get()
+                print "Failed image upload: " + failQueue.get()
             print "Batch Upload finished..."
+        else:
+            print "Queue currently empty, canceling upload."
