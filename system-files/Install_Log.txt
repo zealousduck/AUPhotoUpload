@@ -1,0 +1,10 @@
+#Log of files needed to be installed to linux
+**Currently does not include needed compositor and DM 
+    Wayland is out preffered compositor. X should be avoided
+install pip (~4MB)
+    + 'sudo apt install python-pip'
+    use pip to install:
+        +sudo pip install dropbox (dropbox API)
+        
+        You can uninstall pip when done
+            sudo apt remove python-pip
