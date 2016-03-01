@@ -8,8 +8,15 @@ import PhotoUploadConstants as constants
 import PhotoUploadUtility as Utility
 import time
 import os
+import thread
+import subprocess
 
 class Reader(object):
+
+    shell = False;
+    dirPhoto = "~/Pictures/Dropbox"
+    dirThumb = "~/Pictures/Thumbnail"
+    dirBrowser = "~/Pictures/Browser"
 
     def __init__(self, orders):
         config = Utility.getProjectConfig()
@@ -20,12 +27,32 @@ class Reader(object):
     
     def run(self):
         print "Hi, I'm a Reader!"
+        threadStarted = False
         while not self.myOrders.empty():
             time.sleep(constants.POLL_TIME)
+            if not threadStarted:
+                thread.start_new_thread(self.wait_event_download)
+                threadStarted = True
             print "Reader, checking in! pid:", os.getpid()
-            # Plug in actual functionality from prototypes!
+        
         print "Reader is exiting."
+        self.toggle_off()
         # Put actual cleanup/saving code here!
         print "Reader successfully exited."
     
-    
+    def wait_event_download(self):
+        try:
+            # Adds pictures to the stored photo directory. If no camera is supported, we raise an error.
+            subprocess.check_output(["gphoto2", "--wait-event-and-download", "--skip-existing", self.dirBrowser], self.shell);
+        except subprocess.CalledProcessError:
+            print "Camera is either not connected or not supported"
+        
+    def toggle_off(self):
+        try:
+            subprocess.check_output(["killall", "gphoto2"], self.shell);
+        except subprocess.CalledProcessError:
+            print "Gphoto2 not a running proccess."    
+        finally:
+            exit  
+
+
