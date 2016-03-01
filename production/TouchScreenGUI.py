@@ -4,9 +4,8 @@ Created on Jan 25, 2016
 @author: stacypickens
 '''
 import os
-from Tkinter import *
-from multiprocessing import Process, Queue
 
+from multiprocessing import Queue
 
 class FrontEnd(object):
     
@@ -20,6 +19,7 @@ class FrontEnd(object):
         self.root.mainloop()
     
     def TkSetup(self):
+        from Tkinter import Tk, Label, X, Frame, Button, LEFT
         root = Tk()
         root.wm_title("AU Photo Upload")
         #img = PhotoImage(file='tiger.gif')
@@ -67,10 +67,7 @@ class FrontEnd(object):
     def Settings(self, event):
         print("Test for script to settings")
         self.queue.put("Settings")
-        
-    def startSupervisor(self):
-        svisor = Supervisor.Supervisor()
-        svisor.run()
+
         
 if __name__ == '__main__':
     blah = Queue()
