@@ -19,7 +19,7 @@ class FrontEnd(object):
         self.root.mainloop()
     
     def TkSetup(self):
-        from Tkinter import Tk, Label, X, Frame, Button, LEFT
+        from Tkinter import *
         root = Tk()
         root.wm_title("AU Photo Upload")
         #img = PhotoImage(file='tiger.gif')
