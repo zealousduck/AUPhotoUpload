@@ -5,13 +5,13 @@ Created on Feb 28, 2016
 '''
 import subprocess as sb
 import os
+import time
 
 class CamReader(object):
     '''
     classdocs
     '''
-    shell = True;
-    curPID = None;
+    shell = False;
     dirPhoto = "~/Pictures/Dropbox"
     dirThumb = "~/Pictures/Thumbnail"
     dirBrowser = "~/Picture/Browser"
@@ -28,19 +28,17 @@ class CamReader(object):
             sb.check_output(["gphoto2", "--wait-event-and-download", "--skip-existing", self.dirBrowser], self.shell);
         except sb.CalledProcessError:
             print "Camera is either not connected or not supported"
-            # Here we need to figure out proper error handling
-            self.wait_event_download(); #Continues to attempt the connection in till killed
-                
-            
-        self.curPID = os.getpid(); #Use this pid to toggle off. Using kill.
-        #print self.curPID;
     
     def toggle_off(self):
         try:
-            sb.check_output(["kill", self.curPID], self.shell);
+            sb.check_output(["killall", "gphoto2"], self.shell);
         except sb.CalledProcessError:
-                self.toggle_off() #run intill dead
+            print "Gphoto2 not a running proccess."
+            
+        finally:
+            exit        
 
 #main test
 read = CamReader();
 read.wait_event_download();
+#read.toggle_off()
