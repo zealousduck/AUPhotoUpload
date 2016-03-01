@@ -4,7 +4,6 @@ Created on Jan 25, 2016
 @author: stacypickens
 '''
 import os
-
 from multiprocessing import Queue
 
 class FrontEnd(object):
