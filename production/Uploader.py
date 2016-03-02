@@ -48,7 +48,7 @@ class UploadWorker(Process):
                         dropResponse = "User over data quota (http 507)."
                     self.errorQueue.put("Upload failed for local file " + self.localName + ", Dropbox replied with: " + dropResponse)
         except IOError as localError:
-            self.errorQueue.put("Error uploading " + self.localName + ": I/O error(" + localError.errno + "): %s" + localError.strerror)
+            self.errorQueue.put("Error uploading " + self.localName + ": I/O error(" + localError.errno + "): " + localError.strerror)
         print "upload complete for", self.localName
 
 class Uploader(object):
