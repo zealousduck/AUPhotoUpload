@@ -1,0 +1,19 @@
+#!/bin/bash
+# Demonstration script for Cycle 1.
+# Offers simple functionality to completely start and stop our application.
+
+photoDir=/home/photos/workspace/AUPhotoUpload/production/_photo_upload_test_directory
+pythonDir=/home/photos/workspace/AUPhotoUpload/production
+
+if [ "$1" = "--run" ]; then
+	echo -e "\nStarting demo application...\n"
+	cd $pythonDir && python Supervisor.py && cd $photoDir && gphoto2 --wait-event-and-capture &
+	echo -e "\nUse './demo_script --stop' to quit.\n"
+		
+elif [ "$1" = "--stop" ]; then
+	echo -e "\nStopping demo application.\n"
+	killall python && killall gphoto2
+else
+	echo -e "\nScript arguments:\n\t--run\tStarts the demo application + GUI\n\t--stop\tStops the demo application\n"
+	exit 0
+fi
