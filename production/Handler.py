@@ -31,7 +31,8 @@ class Handler(object):
         self.uploadOrders.put("run")
         uploaderProcess = Process(target = self.startUploader)
         uploaderProcess.start()
-        print self.directoryName
+        print "Accessing photos in",self.directoryName
+        # Main loop
         while not self.orders.empty():
             currentList = self.getDirectoryList(self.directoryName)
             listToUpload = self.getListDifference(self.imageList, currentList)
