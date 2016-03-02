@@ -93,7 +93,8 @@ class Handler(object):
         '''
         newName = (timeStamp + '.jpg')
         newPath = (self.directoryName + '/' + newName)
-        subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
+        os.rename(self.directoryName + '/' + name, newPath)
+        #subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
         return newName
 
     
