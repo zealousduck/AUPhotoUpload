@@ -31,7 +31,8 @@ class Handler(object):
         self.uploadOrders.put("run")
         uploaderProcess = Process(target = self.startUploader)
         uploaderProcess.start()
-        print self.directoryName
+        print "Accessing photos in",self.directoryName
+        # Main loop
         while not self.orders.empty():
             currentList = self.getDirectoryList(self.directoryName)
             listToUpload = self.getListDifference(self.imageList, currentList)
@@ -73,27 +74,25 @@ class Handler(object):
         return differenceList
     
     def renameWithTimestamp(self, name):
-        time.sleep(1) # I HAVE NO CLUE WHY MY DUPLICATE CHECKING IS FAILING!!!
+        fileExtension = os.path.splitext(name)[1]
         i = str(datetime.datetime.now())
         # Convert '2016-02-08 11:16:04.123456 format to nicer filename
         timeStamp = i[0:10] + '-' + i[11:13] + '-' + i[14:16] + '-' + i[17:19]
-        ''' # Nonfunctional duplicate-checking code...
-        renameFail = True
+        
+        newName = (timeStamp + fileExtension)
+        newPath = (self.directoryName + '/' + newName)
+        
         counter = 0
         counterExtension = ''
-        while renameFail:
-            newName = (timeStamp + counterExtension + '.jpg')
+        
+        while os.path.isfile(newPath):
+            counter += 1
+            counterExtension = '-' + str(counter)
+            newName = (timeStamp + counterExtension + fileExtension)
             newPath = (self.directoryName + '/' + newName)
-            if not os.path.isfile(newPath):
-                subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
-                renameFail = False
-            else:
-                counter += 1
-                counterExtension = str('-' + counter) 
-        '''
-        newName = (timeStamp + '.jpg')
-        newPath = (self.directoryName + '/' + newName)
-        subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
+        
+        os.rename(self.directoryName + '/' + name, newPath)
+        #subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
         return newName
 
     

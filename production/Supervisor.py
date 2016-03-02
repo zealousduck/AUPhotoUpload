@@ -54,16 +54,16 @@ class Supervisor(object):
                 if job == "ContinuousUploadCreate":
                     handlerProcess = Process(target = self.startHandler)
                     handlerProcess.start()
-                    
-                    readerProcess = Process(target = self.startReader)
-                    readerProcess.start()
+                    # READER PROCESS DISABLED FOR CYCLE 1 - REDESIGN PENDING PER WADE'S COMMENTS
+                    #readerProcess = Process(target = self.startReader)
+                    #readerProcess.start()
                     
                 elif job == "ContinuousUploadKill":
                     print "Killing Processes ... (they may still check in a few more times, this is normal)"
                     self.handlerQueue.get() #Tells the Handler process to finish.
                     self.readerQueue.get() #Tells the Reader process to finish.
                     handlerProcess.join() #Wait for the Handler process to finish.
-                    readerProcess.join() #Wait the Reader process to finish.
+                    #readerProcess.join() #Wait the Reader process to finish.
                     print "Done killing processes."
                 elif job == "FileExplorer":
                     print "Supervisor handles FileExplorer job here if needed"
