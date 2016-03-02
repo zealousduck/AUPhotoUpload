@@ -138,20 +138,23 @@ class Uploader(object):
             print "Error uploading %s: I/O error(%s): %s" % (localName, localError.errno, localError.strerror)
     
     def uploadBatch(self):
-        numUploads = self.queue.qsize()
-        if numUploads > 0:
-            print "Starting Batch of " + str(numUploads) + " images."
+        numUploads = 0
+        time.sleep(1)
+        if not self.queue.empty():
             managedQueue = Queue()
             failQueue = Queue()
+            while not self.queue.empty():
+                managedQueue.put(self.queue.get())
+                numUploads = numUploads + 1
+                time.sleep(1)
+            print "Starting Batch of " + str(numUploads) + " images."
+            
             numWorkers = 0
             for workerCount in range(4):
                 UploadWorker(managedQueue,failQueue,self.myClient).start()
                 numWorkers = workerCount
                 
             print str(numWorkers) + " workers started." 
-            while numUploads > 0:
-                managedQueue.put(self.queue.get())
-                numUploads = numUploads - 1
                 
             for workerCount in range(4):
                 managedQueue.put(None)
