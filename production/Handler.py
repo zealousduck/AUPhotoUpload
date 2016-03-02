@@ -91,7 +91,7 @@ class Handler(object):
                 counter += 1
                 counterExtension = str('-' + counter) 
         '''
-        newName = (timeStamp + '.jpg')
+        newName = (timeStamp + os.path.splitext(name)[1]) # os.path.splitext(name)[1] returns the file extension
         newPath = (self.directoryName + '/' + newName)
         os.rename(self.directoryName + '/' + name, newPath)
         #subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
