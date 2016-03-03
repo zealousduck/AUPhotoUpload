@@ -14,7 +14,7 @@ class Configurer(object):
 
     def __init__(self):
         self.config = ConfigParser.RawConfigParser()
-        self.fileName = 'photoUpload.cfg'
+        self.fileName = constants.CONFIG_FILE_NAME
         pass
     
     def getOption(self, section=None, option=None):
@@ -28,7 +28,7 @@ class Configurer(object):
             self.config.add_section('directories')
             self.config.add_section('dropboxinfo')
             self.config.add_section('carddata')
-            self.config.set('directories', 'imagedirectory', '_photo_upload_test_directory')   # current
+            self.config.set('directories', 'imagedirectory', '/home/photos/workspace/AUPhotoUpload/production/_photo_upload_test_directory')   # current
             self.config.set('dropboxinfo', 'key', 'kpwogxeclcczgmf')
             self.config.set('dropboxinfo', 'secret', 'tq1fl93eraqbh97')
             self.config.set('dropboxinfo', 'accesstoken', 'n0d7CWbJI0AAAAAAAAAACHuj83rJmyPJsFveoeZore8O7xctu8NfaC0EwnEiWB7I')

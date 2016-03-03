@@ -3,17 +3,24 @@
 # Offers simple functionality to completely start and stop our application.
 
 photoDir=/home/photos/workspace/AUPhotoUpload/production/_photo_upload_test_directory
-pythonDir=/home/photos/workspace/AUPhotoUpload/production
+supervisorDir=/home/photos/workspace/AUPhotoUpload/production/Supervisor.py
+configDir=/home/photos/workspace/AUPhotoUpload/production/Configurer.py
+arg1=--start
+arg2=--stop
 
-if [ "$1" = "--run" ]; then
+if [ "$1" = "$arg1" ]; then
+	echo -e "\nInitializing config with defaults..."
+	python $configDir
 	echo -e "\nStarting demo application...\n"
-	cd $pythonDir && python Supervisor.py && cd $photoDir && gphoto2 --wait-event-and-capture &
-	echo -e "\nUse './demo_script --stop' to quit.\n"
+	python $supervisorDir &
+	cd $photoDir && gphoto2 --wait-event-and-download & 
+	echo -e "\nUse './demo_script $arg2' to quit.\n"
 		
-elif [ "$1" = "--stop" ]; then
+elif [ "$1" = "$arg2" ]; then
 	echo -e "\nStopping demo application.\n"
+	rm *.cfg
 	killall python && killall gphoto2
 else
-	echo -e "\nPhoto Upload Cycle 1 Demo Script arguments:\n\t--run\tStarts the demo application + GUI\n\t--stop\tStops the demo application\n"
+	echo -e "\nPhoto Upload Cycle 1 Demo Script arguments:\n\t$arg1\t\tStarts the demo application + GUI\n\t$arg2\t\tStops the demo application\n"
 	exit 0
 fi
