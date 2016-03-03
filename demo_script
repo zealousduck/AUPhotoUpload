@@ -14,6 +14,6 @@ elif [ "$1" = "--stop" ]; then
 	echo -e "\nStopping demo application.\n"
 	killall python && killall gphoto2
 else
-	echo -e "\nScript arguments:\n\t--run\tStarts the demo application + GUI\n\t--stop\tStops the demo application\n"
+	echo -e "\nPhoto Upload Cycle 1 Demo Script arguments:\n\t--run\tStarts the demo application + GUI\n\t--stop\tStops the demo application\n"
 	exit 0
 fi

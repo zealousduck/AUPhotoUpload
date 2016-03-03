@@ -3,7 +3,7 @@ Created on Feb 3, 2016
 
 Supervisor.py is the parent class and entry point for the PhotoUpload
     application. It creates the child classes that perform the work.
-    Direct child processes: Reader, Handler
+    Direct child processes: Reader, Handler, FrontEnd
 '''
 import PhotoUploadConstants as constants
 import PhotoUploadUtility as utility
@@ -65,8 +65,6 @@ class Supervisor(object):
                     handlerProcess.join() #Wait for the Handler process to finish.
                     #readerProcess.join() #Wait the Reader process to finish.
                     print "Done killing processes."
-                elif job == "FileExplorer":
-                    print "Supervisor handles FileExplorer job here if needed"
                 elif job == "Settings":
                     print "Supervisor handles Settings job here if needed"
                 else:
