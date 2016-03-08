@@ -73,7 +73,7 @@ class Handler(object):
         return differenceList
     
     def renameWithTimestamp(self, name):
-        fileExtension = os.path.splitext(name)[1]
+        time.sleep(1) # I HAVE NO CLUE WHY MY DUPLICATE CHECKING IS FAILING!!!
         i = str(datetime.datetime.now())
         # Convert '2016-02-08 11:16:04.123456 format to nicer filename
         timeStamp = i[0:10] + '-' + i[11:13] + '-' + i[14:16] + '-' + i[17:19]
@@ -89,7 +89,15 @@ class Handler(object):
             counterExtension = '-' + str(counter)
             newName = (timeStamp + counterExtension + fileExtension)
             newPath = (self.directoryName + '/' + newName)
+            if not os.path.isfile(newPath):
+                subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
+                renameFail = False
+            else:
+                counter += 1
+                counterExtension = str('-' + counter) 
         
+        newName = (timeStamp + os.path.splitext(name)[1]) # os.path.splitext(name)[1] returns the file extension
+        newPath = (self.directoryName + '/' + newName)
         os.rename(self.directoryName + '/' + name, newPath)
         #subprocess.call(['mv', (self.directoryName + '/' + name), newPath])
         return newName

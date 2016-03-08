@@ -10,6 +10,7 @@ import PhotoUploadUtility as utility
 import Reader
 import Handler
 import os
+import errno
 import time
 import TouchScreenGUI as tsgui
 from multiprocessing import Process, Queue
@@ -42,7 +43,13 @@ class Supervisor(object):
         config = utility.getProjectConfig()
         imgdir = config.get('directories','imagedirectory')
         if not os.path.isdir(imgdir):
-            subprocess.call(['mkdir', imgdir])  # os.mkdir might also work
+            try:
+                os.makedirs(imgdir)
+            except OSError as exception:
+                if exception.errno != errno.EEXIST:
+                    raise
+        #if not os.path.isdir(imgdir):
+            #subprocess.call(['mkdir', imgdir])  # os.mkdir might also work
             
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
