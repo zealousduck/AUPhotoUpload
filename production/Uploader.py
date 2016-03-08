@@ -3,7 +3,6 @@ Created on Feb 3, 2016
 
 Uploader.py class uploads queued images to Dropbox with its API.
 '''
-import PhotoUploadConstants as constants
 import PhotoUploadUtility as Utility
 import multiprocessing
 import os
@@ -41,7 +40,7 @@ class Uploader(object):
         print "Hi, I'm an Uploader!"
         time.sleep(1)
         while not self.orders.empty():
-            time.sleep(constants.POLL_TIME)
+            time.sleep(Utility.POLL_TIME)
             print "Uploader, checking in! pid:", os.getpid()
             if not self.queue.empty():
                 self.uploadBatch()

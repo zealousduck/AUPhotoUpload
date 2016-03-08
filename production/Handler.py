@@ -5,7 +5,6 @@ Handler.py class operates on the designated directory to determine new images
     to be uploaded. Spawns the child process Uploader and communicates the
     images to be uploaded by placing the image names in a shared queue.
 '''
-import PhotoUploadConstants as constants
 import PhotoUploadUtility as Utility
 import Uploader
 from multiprocessing import Process, Queue
@@ -41,7 +40,7 @@ class Handler(object):
                     #self.enqueue(element)
             self.imageList = self.getDirectoryList(self.directoryName)
             print "Current list:", self.imageList
-            time.sleep(constants.POLL_TIME)
+            time.sleep(Utility.POLL_TIME)
         print "Handler is exiting."
         # Put actual cleanup/saving code here!
         self.uploadOrders.get() #Tells the Uploader process to finish
