@@ -9,9 +9,49 @@ import multiprocessing
 import os
 import time
 import dropbox
+from multiprocessing import Process, Queue
+from Queue import Empty
+
+class UploadWorker(Process):
+    def __init__(self, workQueue,failQueue, inMyClient):
+        super(UploadWorker, self).__init__()
+        self.queue = workQueue
+        self.errorQueue = failQueue
+        self.localName = None
+        self.myClient = inMyClient
+        
+    def run(self):
+        print "Worker started."
+        data = self.dequeue()
+        while data is not None:
+            self.localName = data
+            self.peonUpload()
+            data = self.dequeue()
+        print "Worker exiting..."
+        
+    def dequeue(self):
+        return self.queue.get()
+    
+    def peonUpload(self):
+        if self.localName is None:
+            return
+        print "uploading " +  self.localName
+        try:
+            with open(self.localName, 'rb') as localFile:
+                try:
+                    self.myClient.put_file(str('/' + self.localName), localFile)
+                except dropbox.rest.ErrorResponse as myError:
+                    dropResponse = ""
+                    if myError.status == 400:
+                        dropResponse = "Bad Request (http 400)."
+                    elif myError.status == 507:
+                        dropResponse = "User over data quota (http 507)."
+                    self.errorQueue.put("Upload failed for local file " + self.localName + ", Dropbox replied with: " + dropResponse)
+        except IOError as localError:
+            self.errorQueue.put("Error uploading " + self.localName + ": I/O error(" + localError.errno + "): " + localError.strerror)
+        print "upload complete for", self.localName
 
 class Uploader(object):
-
     def __init__(self, q=None, orderQueue = None):
         if q is None:
             raise Exception('Uploader.__init__():  missing parameter')
@@ -43,8 +83,7 @@ class Uploader(object):
         while not self.orders.empty():
             time.sleep(constants.POLL_TIME)
             print "Uploader, checking in! pid:", os.getpid()
-            if not self.queue.empty():
-                self.uploadBatch()
+            self.uploadBatch()
         print "Uploader is exiting."
         # Put actual cleanup/saving code here!
         print "Uploader successfully exited."
@@ -78,27 +117,56 @@ class Uploader(object):
     
     
     def dequeue(self):
-        return self.queue.get()
+        requiredItem = None
+        try:
+            requiredItem = self.queue.get_nowait()
+        except Empty:
+            requiredItem = None 
+        return requiredItem
     
-    def uploadFile(self):
-        localName =  self.dequeue()
+    def uploadFile(self, localName = None):
+        if localName is None:
+            return
         print "uploading ", localName
         try:
             with open(localName, 'rb') as localFile:
                 try:
                     self.myClient.put_file(str('/' + localName), localFile)
                 except dropbox.rest.ErrorResponse as myError:
-                    dropResponse = ""
-                    if myError.status == 400:
-                        dropResponse = "Bad Request (http 400)."
-                    elif myError.status == 507:
-                        dropResponse = "User over data quota (http 507)."
-                    print "Upload failed for local file %s, Dropbox replied with: %s" % (localName, dropResponse)
+                    print "Upload failed for local file %s, Dropbox replied with: %s" % (localName, myError.body)
         except IOError as localError:
             print "Error uploading %s: I/O error(%s): %s" % (localName, localError.errno, localError.strerror)
-        
     
     def uploadBatch(self):
-        while not self.queue.empty():
-            self.uploadFile()
+        numUploads = 0
+        time.sleep(1)
+        if not self.queue.empty():
+            managedQueue = Queue()
+            failQueue = Queue()
+            while not self.queue.empty():
+                managedQueue.put(self.queue.get())
+                numUploads = numUploads + 1
+                time.sleep(1)
+            print "Starting Batch of " + str(numUploads) + " images."
             
+            numWorkers = 0
+            for workerCount in range(4):
+                UploadWorker(managedQueue,failQueue,self.myClient).start()
+                numWorkers = workerCount
+                
+            print str(numWorkers) + " workers started." 
+                
+            for workerCount in range(4):
+                managedQueue.put(None)
+                numWorkers = workerCount
+            #self.uploadFile(self.dequeue())
+            time.sleep(constants.POLL_TIME) # The .empty() method is instantaneously unreliable after emptying a queue 
+            while not managedQueue.empty():
+                time.sleep(constants.POLL_TIME)
+                print "Waiting for uploads to finish..."
+            print str(numWorkers) + " workers ended."
+            while not failQueue.empty():
+                print "Failed image upload: " + failQueue.get()
+            print "Batch Upload finished..."
+        else:
+            print "Queue currently empty, canceling upload."

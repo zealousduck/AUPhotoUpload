@@ -4,7 +4,7 @@ Created on Jan 25, 2016
 @author: stacypickens
 '''
 import os
-from multiprocessing import Process, Queue
+from multiprocessing import Queue
 
 
 class FrontEnd(object):
@@ -67,8 +67,3 @@ class FrontEnd(object):
     def Settings(self, event):
         print("Test for script to settings")
         self.queue.put("Settings")
-        
-if __name__ == '__main__':
-    blah = Queue()
-    FrontEnd().run(blah)
-  
