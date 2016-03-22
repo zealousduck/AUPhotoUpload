@@ -5,7 +5,7 @@ Configurer.py class operates on the designated configuration file to adjust
     the values via a script (instead of accessing via a text editor). Ideally,
     Configurer will plug into a GUI to provide a user-friendly configuration.
 '''
-import PhotoUploadConstants as constants
+import PhotoUploadUtility as Utility
 import ConfigParser
 import os.path
 from shutil import copyfile
@@ -24,7 +24,7 @@ class Configurer(object):
         return self     # return self to allow call chaining
     
     def revertToDefaults(self):
-        if not os.path.isfile(constants.DEFAULT_CONFIG):
+        if not os.path.isfile(Utility.DEFAULT_CONFIG):
             self.config.add_section('directories')
             self.config.add_section('dropboxinfo')
             self.config.add_section('carddata')
@@ -35,7 +35,7 @@ class Configurer(object):
             self.config.set('carddata', 'recentcardid', 00000000)
             self.saveSettings('photoUploadDefaults.cfg')
         # copyfile completely replaces the old file
-        copyfile(constants.DEFAULT_CONFIG, constants.CONFIG_FILE_NAME)
+        copyfile(Utility.DEFAULT_CONFIG, Utility.CONFIG_FILE_NAME)
             
     def saveSettings(self, name=None):
         if name is None:
@@ -46,5 +46,5 @@ class Configurer(object):
             
 if __name__ == '__main__':
     Configurer().revertToDefaults()
-    print constants.CONFIG_FILE_NAME, "reverted to default values"
+    print Utility.CONFIG_FILE_NAME, "reverted to default values"
     

@@ -5,8 +5,7 @@ Supervisor.py is the parent class and entry point for the PhotoUpload
     application. It creates the child classes that perform the work.
     Direct child processes: Reader, Handler
 '''
-import PhotoUploadConstants as constants
-import PhotoUploadUtility as utility
+import PhotoUploadUtility as Utility
 import Reader
 import Handler
 import os
@@ -40,7 +39,7 @@ class Supervisor(object):
     def run(self):
         print "Supervisor, checking in! pid:", os.getpid()
         # If image directory does not exist yet, create it!
-        config = utility.getProjectConfig()
+        config = Utility.getProjectConfig()
         imgdir = config.get('directories','imagedirectory')
         if not os.path.isdir(imgdir):
             try:
@@ -78,7 +77,7 @@ class Supervisor(object):
                     print "Supervisor handles Settings job here if needed"
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
-            time.sleep(constants.POLL_TIME)
+            time.sleep(Utility.POLL_TIME)
     
 if __name__ == '__main__':
     Supervisor().run()
