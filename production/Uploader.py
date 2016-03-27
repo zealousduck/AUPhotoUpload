@@ -159,9 +159,9 @@ class Uploader(object):
                 managedQueue.put(None)
                 numWorkers = workerCount
             #self.uploadFile(self.dequeue())
-            time.sleep(constants.POLL_TIME) # The .empty() method is instantaneously unreliable after emptying a queue 
+            time.sleep(Utility.POLL_TIME) # The .empty() method is instantaneously unreliable after emptying a queue 
             while not managedQueue.empty():
-                time.sleep(constants.POLL_TIME)
+                time.sleep(Utility.POLL_TIME)
                 print "Waiting for uploads to finish..."
             print str(numWorkers) + " workers ended."
             while not failQueue.empty():

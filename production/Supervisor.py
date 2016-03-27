@@ -57,27 +57,35 @@ class Supervisor(object):
         while True:
             if not self.guiQueue.empty():
                 job = self.guiQueue.get()
-                if job == "ContinuousUploadCreate":
-                    handlerProcess = Process(target = self.startHandler)
-                    handlerProcess.start()
-                    
+                if job == Utility.QMSG_START:
+                    print "Supervisor handles Upload job here"
                     readerProcess = Process(target = self.startReader)
+                    self.readerQueue.put(Utility.QMSG_SCAN)
                     readerProcess.start()
-                    
-                elif job == "ContinuousUploadKill":
-                    print "Killing Processes ... (they may still check in a few more times, this is normal)"
-                    self.handlerQueue.get() #Tells the Handler process to finish.
-                    self.readerQueue.get() #Tells the Reader process to finish.
-                    handlerProcess.join() #Wait for the Handler process to finish.
-                    readerProcess.join() #Wait the Reader process to finish.
-                    print "Done killing processes."
-                elif job == "FileExplorer":
-                    print "Supervisor handles FileExplorer job here if needed"
-                elif job == "Settings":
+                    # wait for reader to finish scanning
+                    readerProcess.join() # THIS MIGHT WORK, DEPENDING ON DESIGN OF READER
+                    # alternatively we scan the self.readerQueue for QMSG_SCAN_DONE
+                    handlerProcess = Process(target = self.startHandler)
+                    self.handlerQueue.put(Utility.QMSG_HANDLE)
+                    handlerProcess.start()
+                elif job == Utility.QMSG_SETTINGS:
                     print "Supervisor handles Settings job here if needed"
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
+            # endif self.guiQueue.empty()
+            
+            time.sleep(1) # wait for handlerProcess to actually start
+            if self.handlerQueue.empty():
+                print 'handlerQueue still empty'
+            else:
+                handlerMsg = Utility.readMessageQueue(self.handlerQueue) 
+                if handlerMsg == Utility.QMSG_UPLOADING:
+                    print 'Uploader still working'
+                elif handlerMsg == Utility.QMSG_UPLOADING_DONE:
+                    print 'Uploader done!'
+                    
             time.sleep(Utility.POLL_TIME)
+        # end while loop
     
 if __name__ == '__main__':
     Supervisor().run()
