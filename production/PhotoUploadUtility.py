@@ -14,8 +14,8 @@ QMSG_START = 'msg_start'
 QMSG_SCAN = 'msg_reader_scan'
 QMSG_SCAN_DONE = 'msg_reader_done'
 QMSG_HANDLE = 'msg_handler_start'
-QMSG_UPLOADING = 'msg_uploader_working'
-QMSG_UPLOADING_DONE = 'msg_uploader_done'
+QMSG_UPLOAD = 'msg_uploader_working'
+QMSG_UPLOAD_DONE = 'msg_uploader_done'
 
 import ConfigParser
 import os
@@ -42,6 +42,7 @@ readMessageQueue() handles the race condition problem of reading the
     asynchronous queues.
     Currently the solution is simply to wait a constant amount of time
     to give the queue a 'reasonable' amount of time to update.
+    TODO: REDESIGN WITH "BLOCKING" LOOP FUNCTIONALITY!!
 '''
 def readMessageQueue(queue=None):
     if queue is None:
