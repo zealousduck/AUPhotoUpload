@@ -7,6 +7,7 @@ PhotoUploadUtility.py provides a set of utility functions that can be used by
 '''
 
 CONFIG_FILE_NAME = 'photoUpload.cfg'
+UPLOADS_FILE_NAME = 'imageList.txt'
 DEFAULT_CONFIG = 'photoUploadDefaults.cfg'
 POLL_TIME = 3   # in seconds
 QMSG_SETTINGS = 'msg_settings'
