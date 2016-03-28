@@ -4,6 +4,7 @@ Created on Jan 25, 2016
 @author: stacypickens
 '''
 import os
+import PhotoUploadUtility as Utility
 from multiprocessing import Queue
 
 
@@ -49,7 +50,7 @@ class FrontEnd(object):
         return root
             
     def StartUpload(self, event):
-        self.queue.put("StartUpload")
+        self.queue.put(Utility.QMSG_START)
         
     
     def FileExplorer(self, event):
@@ -58,5 +59,5 @@ class FrontEnd(object):
     
     def Settings(self, event):
         print("Test for script to settings")
-        self.queue.put("Settings")
+        self.queue.put(Utility.QMSG_SETTINGS)
         
