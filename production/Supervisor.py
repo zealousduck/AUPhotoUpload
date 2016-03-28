@@ -23,12 +23,12 @@ class Supervisor(object):
         self.readerQueue = Queue()
     
     def startReader(self):
-        self.readerQueue.put("run")
+        #self.readerQueue.put("run")
         reader = Reader.Reader(self.readerQueue)
         reader.run()
     
     def startHandler(self):
-        self.handlerQueue.put("run")
+        #self.handlerQueue.put("run")
         handler = Handler.Handler(self.handlerQueue)
         handler.run()
         
@@ -79,9 +79,9 @@ class Supervisor(object):
                 print 'handlerQueue still empty'
             else:
                 handlerMsg = Utility.readMessageQueue(self.handlerQueue) 
-                if handlerMsg == Utility.QMSG_UPLOADING:
+                if handlerMsg == Utility.QMSG_UPLOAD:
                     print 'Uploader still working'
-                elif handlerMsg == Utility.QMSG_UPLOADING_DONE:
+                elif handlerMsg == Utility.QMSG_UPLOAD_DONE:
                     print 'Uploader done!'
                     
             time.sleep(Utility.POLL_TIME)

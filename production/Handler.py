@@ -22,30 +22,65 @@ class Handler(object):
         self.orders = orderQueue
         self.uploadOrders = Queue()
         self.queue = Queue()
-        self.imageList = self.getDirectoryList(self.directoryName)
+        self.listFileName = 'imageList.txt'
+        
+#     def run(self):
+#         print "Hi, I'm a Handler!"
+#         print "Starting Uploader!"
+#         self.uploadOrders.put("run")
+#         uploaderProcess = Process(target = self.startUploader)
+#         uploaderProcess.start()
+#         print self.directoryName
+#         while not self.orders.empty():
+#             currentList = self.getDirectoryList(self.directoryName)
+#             listToUpload = self.getListDifference(self.imageList, currentList)
+#             if len(listToUpload) != 0:
+#                 for element in listToUpload:  
+#                     self.enqueue(self.renameWithTimestamp(element)) # rename and submit the renamed image name
+#                     #self.enqueue(element)
+#             self.imageList = self.getDirectoryList(self.directoryName)
+#             print "Current list:", self.imageList
+#             time.sleep(Utility.POLL_TIME)
+#         print "Handler is exiting."
+#         # Put actual cleanup/saving code here!
+#         self.uploadOrders.get() #Tells the Uploader process to finish
+#         uploaderProcess.join() #Waits for the Uploader process to finish
+#         print "Handler successfully exited."
         
     def run(self):
-        print "Hi, I'm a Handler!"
-        print "Starting Uploader!"
-        self.uploadOrders.put("run")
-        uploaderProcess = Process(target = self.startUploader)
-        uploaderProcess.start()
-        print self.directoryName
-        while not self.orders.empty():
+        # if orders queue is empty, wait
+        while self.orders.empty(): # wait for an order from Handler to start
+            time.sleep(1)
+        # once received, check order
+        msg = self.orders.get()
+        # if order is upload, then:
+        if msg == Utility.QMSG_HANDLE:
+            # pull the old list from disk
+            f = open(self.listFileName, 'r')
+            oldList = []
+            for line in f:
+                oldList.append(line)
+            f.close()
+            # compare to current directory
             currentList = self.getDirectoryList(self.directoryName)
-            listToUpload = self.getListDifference(self.imageList, currentList)
+            # get difference
+            listToUpload = self.getListDifference(oldList, currentList)
             if len(listToUpload) != 0:
                 for element in listToUpload:  
                     self.enqueue(self.renameWithTimestamp(element)) # rename and submit the renamed image name
-                    #self.enqueue(element)
-            self.imageList = self.getDirectoryList(self.directoryName)
-            print "Current list:", self.imageList
-            time.sleep(Utility.POLL_TIME)
-        print "Handler is exiting."
-        # Put actual cleanup/saving code here!
-        self.uploadOrders.get() #Tells the Uploader process to finish
-        uploaderProcess.join() #Waits for the Uploader process to finish
-        print "Handler successfully exited."
+            f = open(self.listFileName, 'w+')
+            # write new list to disk
+            for element in currentList:
+                f.write(element)
+            f.close()
+            uploaderProcess = Process(target = self.startUploader)
+            self.uploadOrders.put(Utility.QMSG_UPLOAD)
+            uploaderProcess.start()
+            # then enqueued, wait for uploader to finish
+            uploaderProcess.join()
+        # once uploader done, exit/send a message to supervisor "done" and then exit
+        self.orders.put(Utility.QMSG_UPLOAD_DONE)
+        pass
     
     def enqueue(self, element=None):
         if element is None:
