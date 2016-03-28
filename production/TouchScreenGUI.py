@@ -55,7 +55,7 @@ class FrontEnd(object):
     
     def FileExplorer(self, event):
         print("Test for script to file explorer")
-        self.queue.put(QMSG_FILE_EXPLORER)
+        self.queue.put(Utility.QMSG_FILE_EXPLORER)
     
     def Settings(self, event):
         print("Test for script to settings")
