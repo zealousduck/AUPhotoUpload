@@ -21,6 +21,7 @@ class Supervisor(object):
         self.guiQueue = Queue()
         self.handlerQueue = Queue()
         self.readerQueue = Queue()
+        self.statusQueue = Queue()
     
     def startReader(self):
         #self.readerQueue.put("run")
@@ -33,7 +34,7 @@ class Supervisor(object):
         handler.run()
         
     def startGUI(self):
-        myGui = tsgui.FrontEnd(self.guiQueue)
+        myGui = tsgui.FrontEnd(self.guiQueue, self.statusQueue)
         myGui.run()
     
     def run(self):
@@ -61,15 +62,21 @@ class Supervisor(object):
                     print "Supervisor handles Upload job here"
                     readerProcess = Process(target = self.startReader)
                     self.readerQueue.put(Utility.QMSG_SCAN)
+                    self.statusQueue.put(Utility.QMSG_SCAN)
                     readerProcess.start()
                     # wait for reader to finish scanning
-                    readerProcess.join() # THIS MIGHT WORK, DEPENDING ON DESIGN OF READER
+                    readerProcess.join()
+                    self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+                     
+                    # THIS MIGHT WORK, DEPENDING ON DESIGN OF READER
                     # alternatively we scan the self.readerQueue for QMSG_SCAN_DONE
                     handlerProcess = Process(target = self.startHandler)
                     self.handlerQueue.put(Utility.QMSG_HANDLE)
                     handlerProcess.start()
                 elif job == Utility.QMSG_SETTINGS:
                     print "Supervisor handles Settings job here if needed"
+                elif job == Utility.QMSG_FILE_EXPLORER:
+                    pass
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
             # endif self.guiQueue.empty()
@@ -80,10 +87,14 @@ class Supervisor(object):
             else:
                 handlerMsg = Utility.readMessageQueue(self.handlerQueue) 
                 if handlerMsg == Utility.QMSG_UPLOAD:
-                    print 'Uploader still working'
-                elif handlerMsg == Utility.QMSG_UPLOAD_DONE:
-                    print 'Uploader done!'
+                    self.statusQueue.put(Utility.QMSG_UPLOAD)
                     
+                elif handlerMsg == Utility.QMSG_UPLOAD_DONE:
+                    self.statusQueue.put(Utility.QMSG_UPLOAD_DONE)
+                elif handlerMsg == Utility.QMSG_HANDLE_NONE:
+                    self.statusQueue.put(Utility.QMSG_HANDLE_NONE)
+                else:
+                    self.statusQueue.put("Unknown Message from handlerQueue")
             time.sleep(Utility.POLL_TIME)
         # end while loop
     
