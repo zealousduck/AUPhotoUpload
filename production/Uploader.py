@@ -82,7 +82,7 @@ class Uploader(object):
         while self.orders.empty(): # wait for an order from Handler to start
             time.sleep(1)
         # require that Handler tell uploader to QMSG_UPLOAD
-        handlerMsg = self.handlerQueue.get()
+        handlerMsg = self.orders.get()
         if handlerMsg == Utility.QMSG_UPLOAD:
             self.uploadBatch() 
         self.orders.put(Utility.QMSG_UPLOAD_DONE) # tell Handler we're done

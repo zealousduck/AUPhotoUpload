@@ -4,6 +4,7 @@ Created on Jan 25, 2016
 @author: stacypickens
 '''
 import os
+import PhotoUploadUtility as Utility
 from multiprocessing import Queue
 
 
@@ -31,8 +32,8 @@ class FrontEnd(object):
         topFrame.pack()
         
         #information for Upload Photos (continuous)
-        self.button1 = Button(topFrame, text="Upload Photos: \nOFF", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.button1.bind("<Button-1>", self.ContinuousUploadToggle)
+        self.button1 = Button(topFrame, text="Start Upload", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
+        self.button1.bind("<Button-1>", self.StartUpload)
         
         #information for button2
         self.button2 = Button(topFrame, text="File Explorer", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
@@ -47,23 +48,16 @@ class FrontEnd(object):
         self.button2.pack(side=LEFT)
         self.button3.pack(side=LEFT)
         return root
-
-    def ContinuousUploadToggle(self, event):
-        if self.toggle is False:
-            print("Turning on photo upload...")    
-            self.toggle = True
-            self.queue.put("ContinuousUploadCreate")
-            self.button1.config(text="Upload Photos: \nON")
-        else: 
-            print("Turning off photo upload...")
-            self.toggle = False
-            self.queue.put("ContinuousUploadKill")
-            self.button1.config(text="Upload Photos: \nOFF")
+            
+    def StartUpload(self, event):
+        self.queue.put(Utility.QMSG_START)
+        
     
     def FileExplorer(self, event):
         print("Test for script to file explorer")
-        self.queue.put("FileExplorer")
+        self.queue.put(Utility.QMSG_FILE_EXPLORER)
     
     def Settings(self, event):
         print("Test for script to settings")
-        self.queue.put("Settings")
+        self.queue.put(Utility.QMSG_SETTINGS)
+        

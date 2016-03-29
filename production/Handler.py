@@ -22,7 +22,7 @@ class Handler(object):
         self.orders = orderQueue
         self.uploadOrders = Queue()
         self.queue = Queue()
-        self.listFileName = 'imageList.txt'
+        self.listFileName = Utility.UPLOADS_FILE_NAME
         
 #     def run(self):
 #         print "Hi, I'm a Handler!"

@@ -7,10 +7,12 @@ PhotoUploadUtility.py provides a set of utility functions that can be used by
 '''
 
 CONFIG_FILE_NAME = 'photoUpload.cfg'
+UPLOADS_FILE_NAME = 'imageList.txt'
 DEFAULT_CONFIG = 'photoUploadDefaults.cfg'
 POLL_TIME = 3   # in seconds
 QMSG_SETTINGS = 'msg_settings'
 QMSG_START = 'msg_start'
+QMSG_FILE_EXPLORER = 'msg_file_explorer'
 QMSG_SCAN = 'msg_reader_scan'
 QMSG_SCAN_DONE = 'msg_reader_done'
 QMSG_HANDLE = 'msg_handler_start'
