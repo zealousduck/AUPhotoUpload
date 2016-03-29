@@ -49,12 +49,13 @@ class Handler(object):
         
     def run(self):
         # if orders queue is empty, wait
-        while self.orders.empty(): # wait for an order from Handler to start
-            time.sleep(1)
-        # once received, check order
-        msg = self.orders.get()
+#         while self.orders.empty(): # wait for an order from Handler to start
+#             time.sleep(1)
+#         # once received, check order
+#         msg = self.orders.get()
         # if order is upload, then:
-        if msg == Utility.QMSG_HANDLE:
+        status = Utility.readMessageQueue(self.orders)
+        if status == Utility.QMSG_HANDLE:
             # pull the old list from disk
             f = open(self.listFileName, 'r')
             oldList = []
@@ -80,7 +81,6 @@ class Handler(object):
             uploaderProcess.join()
         # once uploader done, exit/send a message to supervisor "done" and then exit
         self.orders.put(Utility.QMSG_UPLOAD_DONE)
-        pass
     
     def enqueue(self, element=None):
         if element is None:

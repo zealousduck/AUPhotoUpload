@@ -79,11 +79,12 @@ class Uploader(object):
     def run(self):
         print "Hi, I'm an Uploader!"
         print "Uploader, checking in! pid:", os.getpid()
-        while self.orders.empty(): # wait for an order from Handler to start
-            time.sleep(1)
-        # require that Handler tell uploader to QMSG_UPLOAD
-        handlerMsg = self.orders.get()
-        if handlerMsg == Utility.QMSG_UPLOAD:
+#         while self.orders.empty(): # wait for an order from Handler to start
+#             time.sleep(1)
+#         # require that Handler tell uploader to QMSG_UPLOAD
+#         handlerMsg = self.orders.get()     
+        status = Utility.readMessageQueue(self.orders)
+        if status == Utility.QMSG_UPLOAD:
             self.uploadBatch() 
         self.orders.put(Utility.QMSG_UPLOAD_DONE) # tell Handler we're done
         print "Uploader is exiting."
