@@ -72,8 +72,6 @@ class FrontEnd(object):
             displayText = "No new\n images\n found."
         elif(pendingStatus == "Idle"):
             displayText = "Idle"
-        elif(pendingStatus == "all your base."):
-            displayText = "all your base."
         else:
             displayText = "Error: \nUnknown \nStatus."
             
