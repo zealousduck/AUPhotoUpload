@@ -57,23 +57,28 @@ class Handler(object):
         # if order is upload, then:
         status = Utility.readMessageQueue(self.orders)
         if status == Utility.QMSG_HANDLE:
-            # pull the old list from disk
-            f = open(self.listFileName, 'r')
             oldList = []
-            for line in f:
-                oldList.append(line)
-            f.close()
+            # pull the old list from disk, if it exists
+            if os.path.isfile(self.listFileName):
+                f = open(self.listFileName, 'r')
+                for line in f:
+                    oldList.append(line[:-1]) #ignore '/n' when read in
+                f.close()
+            print oldList
             # compare to current directory
             currentList = self.getDirectoryList(self.directoryName)
+            print currentList
             # get difference
             listToUpload = self.getListDifference(oldList, currentList)
+            renamedList = []
+            for element in listToUpload:
+                renamedList.append(self.renameWithTimestamp(element))
             if len(listToUpload) != 0:
                 self.exitMessage = Utility.QMSG_UPLOAD_DONE
-                for element in listToUpload:  
-                    self.enqueue(self.renameWithTimestamp(element)) # rename and submit the renamed image name
-                f = open(self.listFileName, 'w+')
-                for element in currentList:
-                    f.write(element)
+                f = open(self.listFileName, 'a')
+                for element in renamedList:  
+                    self.enqueue(element) # rename and submit the renamed image name
+                    f.write(element + '\n')
                 f.close()
                 uploaderProcess = Process(target = self.startUploader)
                 self.uploadOrders.put(Utility.QMSG_UPLOAD)
@@ -84,8 +89,6 @@ class Handler(object):
                 uploaderProcess.join()
             else:
                 self.exitMessage = Utility.QMSG_HANDLE_NONE
-            
-            
             
         # once uploader done, exit/send a message to supervisor "done" and then exit
         self.orders.put(self.exitMessage)
@@ -128,7 +131,7 @@ class Handler(object):
         
         while os.path.isfile(newPath):
             counter += 1
-            counterExtension = '-' + str(counter)
+            counterExtension = '(' + str(counter) + ')'
             newName = (timeStamp + counterExtension + fileExtension)
             newPath = (self.directoryName + '/' + newName)
         os.rename(self.directoryName + '/' + name, newPath)
