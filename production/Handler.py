@@ -131,7 +131,7 @@ class Handler(object):
         
         while os.path.isfile(newPath):
             counter += 1
-            counterExtension = '(' + str(counter) + ')'
+            counterExtension = '-' + str(counter)
             newName = (timeStamp + counterExtension + fileExtension)
             newPath = (self.directoryName + '/' + newName)
         os.rename(self.directoryName + '/' + name, newPath)
