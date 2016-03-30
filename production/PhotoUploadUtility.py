@@ -10,6 +10,8 @@ CONFIG_FILE_NAME = 'photoUpload.cfg'
 UPLOADS_FILE_NAME = 'imageList.txt'
 DEFAULT_CONFIG = 'photoUploadDefaults.cfg'
 POLL_TIME = 1   # in seconds
+OLD_PICS_FILE_NAME = 'oldPics.txt'
+NEW_PICS_FILE_NAME = 'newPics.txt'
 QMSG_SETTINGS = 'msg_settings'
 QMSG_START = 'msg_start'
 QMSG_FILE_EXPLORER = 'msg_file_explorer'
@@ -19,6 +21,7 @@ QMSG_HANDLE = 'msg_handler_start'
 QMSG_HANDLE_NONE = 'msg_handler_none'
 QMSG_UPLOAD = 'msg_uploader_working'
 QMSG_UPLOAD_DONE = 'msg_uploader_done'
+QMSG_IDLE = 'msg_idle'
 
 import ConfigParser
 import os

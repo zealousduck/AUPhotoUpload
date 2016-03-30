@@ -26,7 +26,9 @@ class Reader(object):
         print "Hi, I'm a Reader!"
         status = Utility.readMessageQueue(self.myOrders)
         if status == Utility.QMSG_SCAN:
-            pass # READER SCAN PATCH INSERTED LOGIC HERE 
+            camera_filenames_to_file(Utility.NEW_PICS_FILE_NAME)
+            downloadNewImages(fileNameOld=Utility.OLD_PICS_FILE_NAME, fileNameNew=Utility.NEW_PICS_FILE_NAME)
+            os.rename(old=Utility.OLD_PICS_FILE_NAME, new=Utility.NEW_PICS_FILE_NAME)
         print "Reader is exiting."
         # Put actual cleanup/saving code here!
         print "Reader successfully exited."
@@ -34,14 +36,15 @@ class Reader(object):
 def camera_filenames_to_file(outputFileName=None):
     if outputFileName is None:
         raise Exception('camera_filenames_to_file:  missing file name parameter')
-    #We should make a copy of old filename to compare with?
-# RETURNING AN UNKNOWN ERROR -1, NEEDS INVESTIGATION
-    with open(outputFileName, 'w') as outFile:
+    if not os.path.isfile(outputFileName):
+        open(outputFileName, 'w+')
+    with open(outputFileName, 'w+') as outFile:
         try:
             #outputFileArg = '>' + outputFileName
             subprocess.check_call(['gphoto2', '-L'], stdout=outFile) #shell=False
         except subprocess.CalledProcessError:
             print 'Camera is either not connected or not supported' #There is no error in this case. We get the proper outputfile
+
 def __getImageNumber(line=None):
     if line is None:
         raise Exception('getImageNumber:  missing line string parameter')

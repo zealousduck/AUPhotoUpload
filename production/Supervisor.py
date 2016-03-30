@@ -51,6 +51,7 @@ class Supervisor(object):
         guiProcess.start()
         # Initialize with all images currently on camera
         self.statusQueue.put(Utility.QMSG_SCAN)
+        # BUG: CRASHING BECAUSE IT CAN'T FIND FILE, EVEN WHEN EXISTS; NEEDS INVESTIGATION
         Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
         self.statusQueue.put(Utility.QMSG_SCAN_DONE)
         time.sleep(Utility.POLL_TIME)
