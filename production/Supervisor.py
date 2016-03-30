@@ -24,12 +24,10 @@ class Supervisor(object):
         self.statusQueue = Queue()
     
     def startReader(self):
-        #self.readerQueue.put("run")
         reader = Reader.Reader(self.readerQueue)
         reader.run()
     
     def startHandler(self):
-        #self.handlerQueue.put("run")
         handler = Handler.Handler(self.handlerQueue)
         handler.run()
         
@@ -49,8 +47,6 @@ class Supervisor(object):
             except OSError as exception:
                 if exception.errno != errno.EEXIST:
                     raise
-        #if not os.path.isdir(imgdir):
-            #subprocess.call(['mkdir', imgdir])  # os.mkdir might also work
             
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
@@ -68,9 +64,7 @@ class Supervisor(object):
                     # wait for reader to finish scanning
                     readerProcess.join()
                     self.statusQueue.put(Utility.QMSG_SCAN_DONE)
-                     
-                    # THIS MIGHT WORK, DEPENDING ON DESIGN OF READER
-                    # alternatively we scan the self.readerQueue for QMSG_SCAN_DONE
+                    
                     handlerProcess = Process(target = self.startHandler)
                     self.handlerQueue.put(Utility.QMSG_HANDLE)
                     handlerProcess.start()
@@ -82,10 +76,8 @@ class Supervisor(object):
                     raise Exception('Supervisor.run:  unexpected object in queue')
             # endif self.guiQueue.empty()
             
-            time.sleep(1) # wait for handlerProcess to actually start
-            if self.handlerQueue.empty():
-                print 'handlerQueue still empty'
-            else:
+            time.sleep(Utility.POLL_TIME) # wait for handlerProcess to actually start
+            if not self.handlerQueue.empty():
                 handlerMsg = Utility.readMessageQueue(self.handlerQueue) 
                 if handlerMsg == Utility.QMSG_UPLOAD:
                     self.statusQueue.put(Utility.QMSG_UPLOAD)

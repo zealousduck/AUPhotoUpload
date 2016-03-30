@@ -49,12 +49,6 @@ class Handler(object):
 #         print "Handler successfully exited."
         
     def run(self):
-        # if orders queue is empty, wait
-#         while self.orders.empty(): # wait for an order from Handler to start
-#             time.sleep(1)
-#         # once received, check order
-#         msg = self.orders.get()
-        # if order is upload, then:
         status = Utility.readMessageQueue(self.orders)
         if status == Utility.QMSG_HANDLE:
             oldList = []
@@ -64,11 +58,8 @@ class Handler(object):
                 for line in f:
                     oldList.append(line[:-1]) #ignore '/n' when read in
                 f.close()
-            print oldList
             # compare to current directory
             currentList = self.getDirectoryList(self.directoryName)
-            print currentList
-            # get difference
             listToUpload = self.getListDifference(oldList, currentList)
             renamedList = []
             for element in listToUpload:
