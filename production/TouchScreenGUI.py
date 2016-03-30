@@ -13,14 +13,26 @@ class FrontEnd(object):
     def __init__(self, taskQueue, statusQueue):
         self.toggle = False     # Variable for constant-upload mode
         self.queue = taskQueue
+        self.gearState = 0
+        self.myGear = None
+        self.myImages = {
+                         Utility.QMSG_SCAN: "ima1",
+                         Utility.QMSG_SCAN_DONE: "ima2",
+                         Utility.QMSG_UPLOAD: "ima3",
+                         Utility.QMSG_UPLOAD_DONE: "ima4",
+                         Utility.QMSG_HANDLE_NONE: "ima5",
+                         "Idle": "ima6"
+                         }
         self.statusQueue = statusQueue
         self.currentStatus = "Idle"
+        self.currentPhoto = None
         self.root = self.TkSetup()
         
     
     def run(self):
         print "TouchScreenGUI, checking in! pid:", os.getpid()
         self.root.after(1000, self.getMsgTask)
+        self.root.after(20, self.DriveGear)
         self.root.mainloop()
         
     
@@ -50,15 +62,21 @@ class FrontEnd(object):
         self.button3.bind("<Button-1>", self.Settings)
         
         self.button4 = Button(topFrame, text=self.currentStatus, width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
-    
+        self.button5 = Button(root, text="", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
+        self.button6 = Button(topFrame, text="", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
         #pack all information for the buttons 
+        self.currentPhoto = PhotoImage(file = "ima6.gif")
+        self.myGear = PhotoImage(file = "gears.gif")
         self.button1.pack(side=LEFT)
         self.button2.pack(side=LEFT)
         self.button3.pack(side=LEFT)
         self.button4.pack(side=LEFT)
+        self.button5.pack(side=BOTTOM)
+        self.button6.pack(side=LEFT)
         return root
     
     def DisplayCurrentStatus(self, pendingStatus):
+        from Tkinter import PhotoImage, BOTTOM
         displayText = ""
         if(pendingStatus == Utility.QMSG_SCAN):
             displayText = "Scanning\n For New\n Images..."
@@ -77,6 +95,20 @@ class FrontEnd(object):
             
         self.currentStatus = pendingStatus
         self.button4["text"] = displayText
+        print self.myImages[pendingStatus] + ".gif"
+        self.currentPhoto = PhotoImage(file = self.myImages[pendingStatus] + ".gif")
+        self.button5.config(image= self.currentPhoto, width="500", height="64")
+        self.button5.pack(side=BOTTOM)
+        
+    def DriveGear(self):
+        from Tkinter import PhotoImage, BOTTOM, TOP, LEFT
+        self.myGear = PhotoImage(file = "gears.gif", format=str("gif -index " + str(self.gearState)))
+        self.button6.config(image= self.myGear, width="120", height="120")
+        self.button6.pack(side=LEFT)
+        self.gearState += 1
+        if self.gearState > 19:
+            self.gearState = 0
+        self.root.after(20, self.DriveGear) 
     
     def StartUpload(self, event):
         self.queue.put(Utility.QMSG_START)
