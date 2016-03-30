@@ -15,15 +15,12 @@ class FrontEnd(object):
         self.queue = taskQueue
         self.statusQueue = statusQueue
         self.currentStatus = "Idle"
-        self.root = self.TkSetup()
-        
+        self.root = self.TkSetup()   
     
     def run(self):
         print "TouchScreenGUI, checking in! pid:", os.getpid()
-        self.root.after(1000, self.getMsgTask)
+        self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in milliseconds
         self.root.mainloop()
-        
-    
     
     def TkSetup(self):
         from Tkinter import *
@@ -82,24 +79,14 @@ class FrontEnd(object):
         self.queue.put(Utility.QMSG_START)
         
     def getMsgTask(self):
-        
-        # read message queue
-        #     is message queue empty?
-        #     queue.empty() returns true or false
-        #     if yes, do nothing
-        #     if no, check message
         statusMessage = ""
         if(self.statusQueue.empty()):
             statusMessage = self.currentStatus
         else:
             statusMessage = self.statusQueue.get() 
         self.DisplayCurrentStatus(statusMessage)
-        # check what the message is
-        #    e.g. MSG=working, display a loading icon
-        #    e.g. MSG=done, display a checkmark
-        
-        # reschedule this task after working
-        self.root.after(1000, self.getMsgTask) 
+ 
+        self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in ms
     
     def FileExplorer(self, event):
         print("Test for script to file explorer")
