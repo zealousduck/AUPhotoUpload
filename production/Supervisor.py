@@ -8,12 +8,12 @@ Supervisor.py is the parent class and entry point for the PhotoUpload
 import PhotoUploadUtility as Utility
 import Reader
 import Handler
+import Configurer
 import os
 import errno
 import time
 import TouchScreenGUI as tsgui
 from multiprocessing import Process, Queue
-import subprocess
 
 class Supervisor(object):
 
@@ -42,6 +42,7 @@ class Supervisor(object):
         # If image directory does not exist yet, create it!
         config = Utility.getProjectConfig()
         imgdir = config.get('directories','imagedirectory')
+        print imgdir
         if not os.path.isdir(imgdir):
             try:
                 os.makedirs(imgdir)
@@ -99,6 +100,8 @@ class Supervisor(object):
         # end while loop
     
 if __name__ == '__main__':
+    if not os.path.isfile(Utility.CONFIG_FILE_NAME):
+        Configurer.Configurer().revertToDefaults()
     Supervisor().run()
-    
+
         
