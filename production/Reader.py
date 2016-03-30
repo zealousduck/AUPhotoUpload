@@ -35,14 +35,14 @@ class Reader(object):
 def camera_filenames_to_file(outputFileName=None):
     if outputFileName is None:
         raise Exception('camera_filenames_to_file:  missing file name parameter')
-    os.system('gphoto2 -L >' + outputFileName)
+    #We should make a copy of old filename to compare with?
 # RETURNING AN UNKNOWN ERROR -1, NEEDS INVESTIGATION
-#    try:
-#        outputFileArg = '>' + outputFileName
-#        subprocess.check_output(['gphoto2', '-L', outputFileArg]) #shell=False
-#    except subprocess.CalledProcessError:
-#        print 'Camera is either not connected or not supported'
-    
+    with open(outputFileName, 'w') as outFile:
+        try:
+            #outputFileArg = '>' + outputFileName
+            subprocess.check_call(['gphoto2', '-L'], stdout=outFile) #shell=False
+        except subprocess.CalledProcessError:
+            print 'Camera is either not connected or not supported' #There is no error in this case. We get the proper outputfile
 def __getImageNumber(line=None):
     if line is None:
         raise Exception('getImageNumber:  missing line string parameter')
@@ -76,4 +76,12 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
             except subprocess.CalledProcessError:
                 print 'Camera is either not connected or not supported'
                 
-                
+
+if __name__ == '__main__':
+    nFile = "../newPics"
+    oFile = "../oldPics"
+    camera_filenames_to_file(oFile)     #Runs whenever supervisor is launched
+    #Waits for new pictures to be taken
+    camera_filenames_to_file(nFile) #Runs whenever button click for upload photo is launched.
+    downloadNewImages(oFile,nFile) #We will probably need to point this to the proper directory later on
+    
