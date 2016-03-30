@@ -23,6 +23,7 @@ class Handler(object):
         self.uploadOrders = Queue()
         self.queue = Queue()
         self.listFileName = Utility.UPLOADS_FILE_NAME
+        self.exitMessage = ""
         
 #     def run(self):
 #         print "Hi, I'm a Handler!"
@@ -67,20 +68,27 @@ class Handler(object):
             # get difference
             listToUpload = self.getListDifference(oldList, currentList)
             if len(listToUpload) != 0:
+                self.exitMessage = Utility.QMSG_UPLOAD_DONE
                 for element in listToUpload:  
                     self.enqueue(self.renameWithTimestamp(element)) # rename and submit the renamed image name
-            f = open(self.listFileName, 'w+')
-            # write new list to disk
-            for element in currentList:
-                f.write(element)
-            f.close()
-            uploaderProcess = Process(target = self.startUploader)
-            self.uploadOrders.put(Utility.QMSG_UPLOAD)
-            uploaderProcess.start()
-            # then enqueued, wait for uploader to finish
-            uploaderProcess.join()
+                f = open(self.listFileName, 'w+')
+                for element in currentList:
+                    f.write(element)
+                f.close()
+                uploaderProcess = Process(target = self.startUploader)
+                self.uploadOrders.put(Utility.QMSG_UPLOAD)
+                uploaderProcess.start()
+                
+                self.orders.put(Utility.QMSG_UPLOAD)
+                # then enqueued, wait for uploader to finish
+                uploaderProcess.join()
+            else:
+                self.exitMessage = Utility.QMSG_HANDLE_NONE
+            
+            
+            
         # once uploader done, exit/send a message to supervisor "done" and then exit
-        self.orders.put(Utility.QMSG_UPLOAD_DONE)
+        self.orders.put(self.exitMessage)
     
     def enqueue(self, element=None):
         if element is None:

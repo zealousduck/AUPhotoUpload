@@ -21,7 +21,7 @@ class Reader(object):
     
     def run(self):
         print "Hi, I'm a Reader!"
-        status = Utility.readMessageQueue(self.orders)
+        status = Utility.readMessageQueue(self.myOrders)
         if status == Utility.QMSG_SCAN:
             pass # READER SCAN PATCH INSERTED LOGIC HERE 
         print "Reader is exiting."

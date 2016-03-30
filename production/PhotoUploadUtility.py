@@ -16,6 +16,7 @@ QMSG_FILE_EXPLORER = 'msg_file_explorer'
 QMSG_SCAN = 'msg_reader_scan'
 QMSG_SCAN_DONE = 'msg_reader_done'
 QMSG_HANDLE = 'msg_handler_start'
+QMSG_HANDLE_NONE = 'msg_handler_none'
 QMSG_UPLOAD = 'msg_uploader_working'
 QMSG_UPLOAD_DONE = 'msg_uploader_done'
 
