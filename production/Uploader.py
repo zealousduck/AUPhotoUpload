@@ -78,11 +78,15 @@ class Uploader(object):
         
     def run(self):
         print "Hi, I'm an Uploader!"
-        time.sleep(1)
-        while not self.orders.empty():
-            time.sleep(Utility.POLL_TIME)
-            print "Uploader, checking in! pid:", os.getpid()
-            self.uploadBatch()
+        print "Uploader, checking in! pid:", os.getpid()
+#         while self.orders.empty(): # wait for an order from Handler to start
+#             time.sleep(1)
+#         # require that Handler tell uploader to QMSG_UPLOAD
+#         handlerMsg = self.orders.get()     
+        status = Utility.readMessageQueue(self.orders)
+        if status == Utility.QMSG_UPLOAD:
+            self.uploadBatch() 
+        self.orders.put(Utility.QMSG_UPLOAD_DONE) # tell Handler we're done
         print "Uploader is exiting."
         # Put actual cleanup/saving code here!
         print "Uploader successfully exited."
@@ -159,9 +163,9 @@ class Uploader(object):
                 managedQueue.put(None)
                 numWorkers = workerCount
             #self.uploadFile(self.dequeue())
-            time.sleep(constants.POLL_TIME) # The .empty() method is instantaneously unreliable after emptying a queue 
+            time.sleep(Utility.POLL_TIME) # The .empty() method is instantaneously unreliable after emptying a queue 
             while not managedQueue.empty():
-                time.sleep(constants.POLL_TIME)
+                time.sleep(Utility.POLL_TIME)
                 print "Waiting for uploads to finish..."
             print str(numWorkers) + " workers ended."
             while not failQueue.empty():

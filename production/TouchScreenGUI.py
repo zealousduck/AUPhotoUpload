@@ -4,18 +4,22 @@ Created on Jan 25, 2016
 @author: stacypickens
 '''
 import os
+import PhotoUploadUtility as Utility
 from multiprocessing import Queue
 
 
 class FrontEnd(object):
     
-    def __init__(self, sQueue):
-        self.toggle = False     # Variable for constant-upload mode 
-        self.root = self.TkSetup() 
-        self.queue = sQueue
+    def __init__(self, taskQueue, statusQueue):
+        self.toggle = False     # Variable for constant-upload mode
+        self.queue = taskQueue
+        self.statusQueue = statusQueue
+        self.currentStatus = "Idle"
+        self.root = self.TkSetup()   
     
     def run(self):
         print "TouchScreenGUI, checking in! pid:", os.getpid()
+        self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in milliseconds
         self.root.mainloop()
     
     def TkSetup(self):
@@ -31,8 +35,8 @@ class FrontEnd(object):
         topFrame.pack()
         
         #information for Upload Photos (continuous)
-        self.button1 = Button(topFrame, text="Upload Photos: \nOFF", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.button1.bind("<Button-1>", self.ContinuousUploadToggle)
+        self.button1 = Button(topFrame, text="Start Upload", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
+        self.button1.bind("<Button-1>", self.StartUpload)
         
         #information for button2
         self.button2 = Button(topFrame, text="File Explorer", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
@@ -42,28 +46,53 @@ class FrontEnd(object):
         self.button3 = Button(topFrame, text="Settings", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
         self.button3.bind("<Button-1>", self.Settings)
         
+        self.button4 = Button(topFrame, text=self.currentStatus, width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
+    
         #pack all information for the buttons 
         self.button1.pack(side=LEFT)
         self.button2.pack(side=LEFT)
         self.button3.pack(side=LEFT)
+        self.button4.pack(side=LEFT)
         return root
-
-    def ContinuousUploadToggle(self, event):
-        if self.toggle is False:
-            print("Turning on photo upload...")    
-            self.toggle = True
-            self.queue.put("ContinuousUploadCreate")
-            self.button1.config(text="Upload Photos: \nON")
-        else: 
-            print("Turning off photo upload...")
-            self.toggle = False
-            self.queue.put("ContinuousUploadKill")
-            self.button1.config(text="Upload Photos: \nOFF")
+    
+    def DisplayCurrentStatus(self, pendingStatus):
+        displayText = ""
+        if(pendingStatus == Utility.QMSG_SCAN):
+            displayText = "Scanning\n For New\n Images..."
+        elif(pendingStatus == Utility.QMSG_SCAN_DONE):
+            displayText = "Scan\n Complete."
+        elif(pendingStatus == Utility.QMSG_UPLOAD):
+            displayText = "Uploading\n In\n Progress..."
+        elif(pendingStatus == Utility.QMSG_UPLOAD_DONE):
+            displayText = "Uploading\n Complete."
+        elif(pendingStatus == Utility.QMSG_HANDLE_NONE):
+            displayText = "No new\n images\n found."
+        elif(pendingStatus == "Idle"):
+            displayText = "Idle"
+        else:
+            displayText = "Error: \nUnknown \nStatus."
+            
+        self.currentStatus = pendingStatus
+        self.button4["text"] = displayText
+    
+    def StartUpload(self, event):
+        self.queue.put(Utility.QMSG_START)
+        
+    def getMsgTask(self):
+        statusMessage = ""
+        if(self.statusQueue.empty()):
+            statusMessage = self.currentStatus
+        else:
+            statusMessage = self.statusQueue.get() 
+        self.DisplayCurrentStatus(statusMessage)
+ 
+        self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in ms
     
     def FileExplorer(self, event):
         print("Test for script to file explorer")
-        self.queue.put("FileExplorer")
+        self.queue.put(Utility.QMSG_FILE_EXPLORER)
     
     def Settings(self, event):
         print("Test for script to settings")
-        self.queue.put("Settings")
+        self.queue.put(Utility.QMSG_SETTINGS)
+        
