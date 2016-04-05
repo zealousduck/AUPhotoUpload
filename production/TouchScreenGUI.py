@@ -9,7 +9,12 @@ from multiprocessing import Queue
 
 
 class FrontEnd(object):
-    
+    messageDict = {Utility.QMSG_SCAN: "Scanning\n For New\n Images...",
+                    Utility.QMSG_SCAN_DONE: "Scan\n Complete.",
+                    Utility.QMSG_UPLOAD: "Uploading\n In\n Progress...",
+                    Utility.QMSG_UPLOAD_DONE: "Uploading\n Complete.",
+                    Utility.QMSG_HANDLE_NONE: "No new\n images\n found.",
+                    "Idle": "Idle"};
     def __init__(self, taskQueue, statusQueue):
         self.toggle = False     # Variable for constant-upload mode
         self.queue = taskQueue
@@ -40,10 +45,10 @@ class FrontEnd(object):
     def TkSetup(self):
         from Tkinter import *
         root = Tk()
-        root.wm_title("AU Photo Upload")
+        root.wm_title("Photo Upload")
         #img = PhotoImage(file='tiger.gif')
         #root.tk.call('wm', 'iconphoto', root._w, img)
-        label = Label(root, text="AU Photo Upload", bg="orange", fg="white", font = "Verdana 15")
+        label = Label(root, text="Photo Upload", bg="orange", fg="white", font = "Verdana 15")
         label.pack(fill=X)
         
         topFrame = Frame(root)
@@ -63,7 +68,7 @@ class FrontEnd(object):
         
         self.button4 = Button(topFrame, text=self.currentStatus, width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
         self.button5 = Button(root, text="", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.button6 = Button(topFrame, text="", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
+        self.button6 = Label(topFrame, text="", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
         #pack all information for the buttons 
         self.currentPhoto = PhotoImage(file = "ima6.gif")
         self.myGear = PhotoImage(file = "gears.gif")
@@ -78,24 +83,12 @@ class FrontEnd(object):
     def DisplayCurrentStatus(self, pendingStatus):
         from Tkinter import PhotoImage, BOTTOM
         displayText = ""
-        if(pendingStatus == Utility.QMSG_SCAN):
-            displayText = "Scanning\n For New\n Images..."
-        elif(pendingStatus == Utility.QMSG_SCAN_DONE):
-            displayText = "Scan\n Complete."
-        elif(pendingStatus == Utility.QMSG_UPLOAD):
-            displayText = "Uploading\n In\n Progress..."
-        elif(pendingStatus == Utility.QMSG_UPLOAD_DONE):
-            displayText = "Uploading\n Complete."
-        elif(pendingStatus == Utility.QMSG_HANDLE_NONE):
-            displayText = "No new\n images\n found."
-        elif(pendingStatus == "Idle"):
-            displayText = "Idle"
+        if pendingStatus in FrontEnd.messageDict:
+            displayText = FrontEnd.messageDict[pendingStatus]
         else:
             displayText = "Error: \nUnknown \nStatus."
-            
         self.currentStatus = pendingStatus
         self.button4["text"] = displayText
-        print self.myImages[pendingStatus] + ".gif"
         self.currentPhoto = PhotoImage(file = self.myImages[pendingStatus] + ".gif")
         self.button5.config(image= self.currentPhoto, width="500", height="64")
         self.button5.pack(side=BOTTOM)
