@@ -14,7 +14,7 @@ class FrontEnd(object):
                     Utility.QMSG_UPLOAD: "Uploading\n In\n Progress...",
                     Utility.QMSG_UPLOAD_DONE: "Uploading\n Complete.",
                     Utility.QMSG_HANDLE_NONE: "No new\n images\n found.",
-                    "Idle": "Idle"};
+                    Utility.QMSG_IDLE: "Idle"};
     def __init__(self, taskQueue, statusQueue):
         self.toggle = False     # Variable for constant-upload mode
         self.queue = taskQueue
@@ -26,7 +26,7 @@ class FrontEnd(object):
                          Utility.QMSG_UPLOAD: "ima3",
                          Utility.QMSG_UPLOAD_DONE: "ima4",
                          Utility.QMSG_HANDLE_NONE: "ima5",
-                         "Idle": "ima6"
+                         Utility.QMSG_IDLE: "ima6"
                          }
         self.statusQueue = statusQueue
         self.currentStatus = "Idle"
