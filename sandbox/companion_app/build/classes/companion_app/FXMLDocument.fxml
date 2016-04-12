@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.FXMLDocumentController">
+   <top>
+      <HBox BorderPane.alignment="CENTER">
+         <children>
+            <HBox>
+               <children>
+                  <Label prefHeight="45.0" prefWidth="791.0" text="                     Description of Companion APP" />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+         <BorderPane.margin>
+            <Insets bottom="6.0" left="6.0" right="6.0" top="6.0" />
+         </BorderPane.margin>
+      </HBox>
+   </top>
+   <left>
+      <Button fx:id="button1" mnemonicParsing="false" onAction="#button1Click" prefHeight="130.0" prefWidth="200.0" text="Install" BorderPane.alignment="CENTER" />
+   </left>
+   <right>
+      <Button fx:id="button2" mnemonicParsing="false" onAction="#button2Click" prefHeight="130.0" prefWidth="200.0" text="Settings" BorderPane.alignment="CENTER" />
+   </right>
+</BorderPane>
