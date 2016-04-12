@@ -67,6 +67,7 @@ class Supervisor(object):
             self.statusQueue.put(Utility.QMSG_INTERNET_NO)
             stableInternet = False
         handlerProcess = None
+        handlerDelayed = False
         readerProcess = None
         while True:
             if not self.guiQueue.empty():
@@ -85,14 +86,23 @@ class Supervisor(object):
                         handlerProcess = Process(target = self.startHandler)
                         self.handlerQueue.put(Utility.QMSG_HANDLE)
                         handlerProcess.start()
+                        handlerDelayed = False
                     else:
                         time.sleep(Utility.POLL_TIME)
                         self.statusQueue.put(Utility.QMSG_INTERNET_NO)
+                        handlerDelayed = True
                 elif job == Utility.QMSG_SETTINGS:
                     print "Supervisor handles Settings job here if needed"
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
             # endif self.guiQueue.empty()
+            
+            # Start upload if delayed and internet is now stable
+            if handlerDelayed and stableInternet:
+                handlerProcess = Process(target = self.startHandler)
+                self.handlerQueue.put(Utility.QMSG_HANDLE)
+                handlerProcess.start()
+                handlerDelayed = False   
             
             time.sleep(Utility.POLL_TIME) # wait for handlerProcess to actually start
             if not self.handlerQueue.empty():
@@ -112,6 +122,7 @@ class Supervisor(object):
                     stableInternetCounter += 1
                 else:
                     stableInternet = True
+                    self.statusQueue.put(Utility.QMSG_INTERNET_YES)
                 print 'DEBUG: checkInternetConnection() == True'
             else:
                 stableInternetCounter -= 1
