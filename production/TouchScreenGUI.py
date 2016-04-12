@@ -39,8 +39,9 @@ class FrontEnd(object):
         self.button1.bind("<Button-1>", self.StartUpload)
         
         #information for button2
-        self.button2 = Button(topFrame, text="File Explorer", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.button2.bind("<Button-1>", self.FileExplorer)
+        self.button2 = Button(topFrame, text="Internet\nConnection?", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
+        #self.button2 = Button(topFrame, text="File Explorer", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
+        #self.button2.bind("<Button-1>", self.FileExplorer)
         
         #information for button3
         self.button3 = Button(topFrame, text="Settings", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
@@ -57,36 +58,48 @@ class FrontEnd(object):
     
     def DisplayCurrentStatus(self, pendingStatus):
         displayText = ""
+        whichButton = 0
         if(pendingStatus == Utility.QMSG_SCAN):
             displayText = "Scanning\n For New\n Images..."
+            whichButton = 4
         elif(pendingStatus == Utility.QMSG_SCAN_DONE):
             displayText = "Scan\n Complete."
+            whichButton = 4
         elif(pendingStatus == Utility.QMSG_UPLOAD):
             displayText = "Uploading\n In\n Progress..."
+            whichButton = 4
         elif(pendingStatus == Utility.QMSG_UPLOAD_DONE):
             displayText = "Uploading\n Complete."
+            whichButton = 4
         elif(pendingStatus == Utility.QMSG_HANDLE_NONE):
             displayText = "No new\n images\n found."
+            whichButton = 4
         elif(pendingStatus == Utility.QMSG_IDLE):
             displayText = "Idle"
+            whichButton = 4
         elif(pendingStatus == Utility.QMSG_INTERNET_NO):
             displayText = "No\nInternet\nConnection"
+            whichButton = 2
+        elif(pendingStatus == Utility.QMSG_INTERNET_YES):
+            displayText = "Internet\nConnection\nAvailable"
+            whichButton = 2
         else:
             displayText = "Error: \nUnknown \nStatus."
             
         self.currentStatus = pendingStatus
-        self.button4["text"] = displayText
+        if whichButton == 4:
+            self.button4["text"] = displayText
+        elif whichButton == 2:
+            self.button2["text"] = displayText
     
     def StartUpload(self, event):
         self.queue.put(Utility.QMSG_START)
         
     def getMsgTask(self):
         statusMessage = ""
-        if(self.statusQueue.empty()):
-            statusMessage = self.currentStatus
-        else:
+        if not (self.statusQueue.empty()):
             statusMessage = self.statusQueue.get() 
-        self.DisplayCurrentStatus(statusMessage)
+            self.DisplayCurrentStatus(statusMessage)
  
         self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in ms
     
