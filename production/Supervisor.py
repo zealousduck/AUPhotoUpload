@@ -112,11 +112,14 @@ class Supervisor(object):
                     stableInternetCounter += 1
                 else:
                     stableInternet = True
+                print 'DEBUG: checkInternetConnection() == True'
             else:
                 stableInternetCounter -= 1
                 if stableInternetCounter < Utility.STABLE_INTERNET_COUNT/2:
                     stableInternet = False
                     self.statusQueue.put(Utility.QMSG_INTERNET_NO)
+                print 'DEBUG: checkInternetConnection() == False'
+            print 'DEBUG: stableInternet:', stableInternet    
         
             time.sleep(Utility.POLL_TIME)
         # end while loop
