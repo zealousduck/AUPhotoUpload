@@ -10,6 +10,7 @@ CONFIG_FILE_NAME = 'photoUpload.cfg'
 UPLOADS_FILE_NAME = 'imageList.txt'
 DEFAULT_CONFIG = 'photoUploadDefaults.cfg'
 POLL_TIME = 1   # in seconds
+STABLE_INTERNET_COUNT = 5
 # OLD_PICS_FILE_NAME = '/home/chris/workspace/AUPhotoUpload/production/oldPics.txt'
 # NEW_PICS_FILE_NAME = '/home/chris/workspace/AUPhotoUpload/production/newPics.txt'
 OLD_PICS_FILE_NAME = '/home/pi/AUPhotoUpload/production/oldPics.txt' #Place holder for the absolute path for the pi.
@@ -24,8 +25,8 @@ QMSG_HANDLE_NONE = 'msg_handler_none'
 QMSG_UPLOAD = 'msg_uploader_working'
 QMSG_UPLOAD_DONE = 'msg_uploader_done'
 QMSG_IDLE = 'msg_idle'
-QMSG_NO_INTERNET = 'msg_no_internet'
-QMSG_YES_INTERNET = 'msg_yes_internet'
+QMSG_INTERNET_NO = 'msg_no_internet'
+QMSG_INTERNET_YES = 'msg_yes_internet'
 
 import ConfigParser
 import os

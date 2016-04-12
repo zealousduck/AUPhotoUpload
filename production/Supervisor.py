@@ -51,11 +51,21 @@ class Supervisor(object):
         guiProcess.start()
         # Initialize with all images currently on camera
         self.statusQueue.put(Utility.QMSG_SCAN)
-        # BUG: CRASHING BECAUSE IT CAN'T FIND FILE, EVEN WHEN EXISTS; NEEDS INVESTIGATION
         Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
         self.statusQueue.put(Utility.QMSG_SCAN_DONE)
         time.sleep(Utility.POLL_TIME)
-        self.statusQueue.put(Utility.QMSG_IDLE)    
+        # Establish whether we have stable internet
+        stableInternetCounter = 0
+        stableInternet = False  
+        for i in range(2*Utility.STABLE_INTERNET_COUNT):
+            if Utility.checkInternetConnection():
+                stableInternetCounter += 1
+        if (stableInternetCounter == Utility.STABLE_INTERNET_COUNT):
+            self.statusQueue.put(Utility.QMSG_IDLE)
+            stableInternet = True
+        else:
+            self.statusQueue.put(Utility.QMSG_INTERNET_NO)
+            stableInternet = False
         handlerProcess = None
         readerProcess = None
         while True:
@@ -71,13 +81,12 @@ class Supervisor(object):
                     readerProcess.join()
                     self.statusQueue.put(Utility.QMSG_SCAN_DONE)
                     
-                    handlerProcess = Process(target = self.startHandler)
-                    self.handlerQueue.put(Utility.QMSG_HANDLE)
-                    handlerProcess.start()
+                    if stableInternet: # only start Handler if stable connection
+                        handlerProcess = Process(target = self.startHandler)
+                        self.handlerQueue.put(Utility.QMSG_HANDLE)
+                        handlerProcess.start()
                 elif job == Utility.QMSG_SETTINGS:
                     print "Supervisor handles Settings job here if needed"
-                elif job == Utility.QMSG_FILE_EXPLORER:
-                    pass
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
             # endif self.guiQueue.empty()
@@ -86,14 +95,25 @@ class Supervisor(object):
             if not self.handlerQueue.empty():
                 handlerMsg = Utility.readMessageQueue(self.handlerQueue) 
                 if handlerMsg == Utility.QMSG_UPLOAD:
-                    self.statusQueue.put(Utility.QMSG_UPLOAD)
-                    
+                    self.statusQueue.put(Utility.QMSG_UPLOAD) 
                 elif handlerMsg == Utility.QMSG_UPLOAD_DONE:
                     self.statusQueue.put(Utility.QMSG_UPLOAD_DONE)
                 elif handlerMsg == Utility.QMSG_HANDLE_NONE:
                     self.statusQueue.put(Utility.QMSG_HANDLE_NONE)
                 else:
                     self.statusQueue.put("Unknown Message from handlerQueue")
+            
+            # Check current internet connection, allowing for some fluctuation
+            if Utility.checkInternetConnection():
+                if not stableInternetCounter == Utility.STABLE_INTERNET_COUNT:
+                    stableInternetCounter += 1
+                else:
+                    stableInternet = True
+            else:
+                stableInternetCounter -= 1
+                if stableInternetCounter < Utility.STABLE_INTERNET_COUNT/2:
+                    stableInternet = False
+        
             time.sleep(Utility.POLL_TIME)
         # end while loop
     
