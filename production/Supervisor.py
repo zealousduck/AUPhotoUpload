@@ -47,9 +47,15 @@ class Supervisor(object):
             except OSError as exception:
                 if exception.errno != errno.EEXIST:
                     raise
-            
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
+        # Initialize with all images currently on camera
+        self.statusQueue.put(Utility.QMSG_SCAN)
+        # BUG: CRASHING BECAUSE IT CAN'T FIND FILE, EVEN WHEN EXISTS; NEEDS INVESTIGATION
+        Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
+        self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+        time.sleep(Utility.POLL_TIME)
+        self.statusQueue.put(Utility.QMSG_IDLE)    
         handlerProcess = None
         readerProcess = None
         while True:

@@ -14,7 +14,7 @@ class FrontEnd(object):
         self.toggle = False     # Variable for constant-upload mode
         self.queue = taskQueue
         self.statusQueue = statusQueue
-        self.currentStatus = "Idle"
+        self.currentStatus = Utility.QMSG_IDLE
         self.root = self.TkSetup()   
     
     def run(self):
@@ -67,7 +67,7 @@ class FrontEnd(object):
             displayText = "Uploading\n Complete."
         elif(pendingStatus == Utility.QMSG_HANDLE_NONE):
             displayText = "No new\n images\n found."
-        elif(pendingStatus == "Idle"):
+        elif(pendingStatus == Utility.QMSG_IDLE):
             displayText = "Idle"
         else:
             displayText = "Error: \nUnknown \nStatus."
