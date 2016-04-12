@@ -60,18 +60,19 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
         raise Exception('downloadNewImages:  missing file name parameter')
     # Pythonic diff logic
     f = open(fileNameOld, 'r+')
-    imageListOld = []
+    oldImageSet = set()
     for line in f:
-        imageListOld.append(line)
+        oldImageSet.add(line)
     f.close()
     f = open(fileNameNew, 'r+')
-    imageListNew = []
+    newImageSet = set()
     for line in f:
-        imageListNew.append(line)
+        newImageSet.add(line)
     f.close()
-    diff = set(imageListNew).difference(set(imageListOld)) # those in New not in Old
+    newImageSet.difference_update(oldImageSet) # those in New not in Old
+    #diff = set(imageListNew).difference(set(imageListOld)) 
     # parse diff for valid image numbers
-    for line in diff:
+    for line in newImageSet:
         imgNumber = __getImageNumber(line)
         if (imgNumber):
             try:
