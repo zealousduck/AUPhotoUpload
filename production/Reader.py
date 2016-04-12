@@ -45,6 +45,7 @@ def camera_filenames_to_file(outputFileName=None):
         except subprocess.CalledProcessError:
             print 'Camera is either not connected or not supported' #There is no error in this case. We get the proper outputfile
         outFile.close()
+        
 def __getImageNumber(line=None):
     if line is None:
         raise Exception('getImageNumber:  missing line string parameter')
@@ -81,12 +82,4 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
             except subprocess.CalledProcessError:
                 print 'Camera is either not connected or not supported'
                 
-
-# if __name__ == '__main__':
-#     nFile = "newPics"
-#     oFile = "oldPics"
-#     camera_filenames_to_file(oFile)     #Runs whenever supervisor is launched
-    #Waits for new pictures to be taken
-#     camera_filenames_to_file(nFile) #Runs whenever button click for upload photo is launched.
-#     downloadNewImages(oFile,nFile) #We will probably need to point this to the proper directory later on
     
