@@ -106,9 +106,9 @@ class Supervisor(object):
                 else:
                     self.statusQueue.put("Unknown Message from handlerQueue")
             
-            # Check current internet connection, allowing for some fluctuation
+            # Check current internet connection, allowing for some fluctuation in results
             if Utility.checkInternetConnection():
-                if not stableInternetCounter == Utility.STABLE_INTERNET_COUNT:
+                if stableInternetCounter < Utility.STABLE_INTERNET_COUNT:
                     stableInternetCounter += 1
                 else:
                     stableInternet = True
@@ -119,7 +119,7 @@ class Supervisor(object):
                     stableInternet = False
                     self.statusQueue.put(Utility.QMSG_INTERNET_NO)
                 print 'DEBUG: checkInternetConnection() == False'
-            print 'DEBUG: stableInternet:', stableInternet    
+            print 'DEBUG: stableInternet:', stableInternet, 'stableInternetCounter:', stableInternetCounter    
         
             time.sleep(Utility.POLL_TIME)
         # end while loop
