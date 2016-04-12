@@ -44,8 +44,7 @@ def camera_filenames_to_file(outputFileName=None):
             subprocess.check_call(['gphoto2', '-L'], stdout=outFile) #shell=False
         except subprocess.CalledProcessError:
             print 'Camera is either not connected or not supported' #There is no error in this case. We get the proper outputfile
-
-    outFile.close()
+        outFile.close()
 def __getImageNumber(line=None):
     if line is None:
         raise Exception('getImageNumber:  missing line string parameter')
