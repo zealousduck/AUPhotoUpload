@@ -24,11 +24,14 @@ QMSG_HANDLE_NONE = 'msg_handler_none'
 QMSG_UPLOAD = 'msg_uploader_working'
 QMSG_UPLOAD_DONE = 'msg_uploader_done'
 QMSG_IDLE = 'msg_idle'
+QMSG_NO_INTERNET = 'msg_no_internet'
+QMSG_YES_INTERNET = 'msg_yes_internet'
 
 import ConfigParser
 import os
 import Configurer
 import time
+import socket
 
 ''' 
 getProjectConfig() loads the .cfg file into a parseable form. It then
@@ -58,6 +61,20 @@ def readMessageQueue(queue=None):
         time.sleep(POLL_TIME)
     return queue.get()
 
+'''
+checkInternetConnection() allows the application to check the presence
+    of an internet connection without utilizing a DNS lookup. By default,
+    it utilizes Google's DNS servers, connecting via TCP DNS.
+    See: http://stackoverflow.com/questions/3764291/checking-network-connection
+'''
+def checkInternetConnection(host='8.8.8.8', port=53):
+    try:
+        socket.setdefaulttimeout(POLL_TIME)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host,port))
+        return True
+    except Exception as ex:
+        print ex
+    return False
 
 if __name__ == '__main__':
     getProjectConfig()
