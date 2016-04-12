@@ -49,11 +49,6 @@ class Supervisor(object):
                     raise
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
-        # Initialize with all images currently on camera
-        self.statusQueue.put(Utility.QMSG_SCAN)
-        Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
-        self.statusQueue.put(Utility.QMSG_SCAN_DONE)
-        time.sleep(Utility.POLL_TIME)
         # Establish whether we have stable internet
         stableInternetCounter = 0
         stableInternet = False  
@@ -66,6 +61,11 @@ class Supervisor(object):
         else:
             self.statusQueue.put(Utility.QMSG_INTERNET_NO)
             stableInternet = False
+        # Initialize with all images currently on camera
+        self.statusQueue.put(Utility.QMSG_SCAN)
+        Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
+        self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+        time.sleep(Utility.POLL_TIME)
         handlerProcess = None
         handlerDelayed = False
         readerProcess = None
