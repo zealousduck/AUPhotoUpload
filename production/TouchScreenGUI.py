@@ -69,6 +69,8 @@ class FrontEnd(object):
             displayText = "No new\n images\n found."
         elif(pendingStatus == Utility.QMSG_IDLE):
             displayText = "Idle"
+        elif(pendingStatus == Utility.QMSG_INTERNET_NO):
+            displayText = "No\nInternet\nConnection"
         else:
             displayText = "Error: \nUnknown \nStatus."
             
