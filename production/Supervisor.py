@@ -57,10 +57,10 @@ class Supervisor(object):
         # Establish whether we have stable internet
         stableInternetCounter = 0
         stableInternet = False  
-        for i in range(2*Utility.STABLE_INTERNET_COUNT):
+        for i in range(Utility.STABLE_INTERNET_COUNT):
             if Utility.checkInternetConnection():
                 stableInternetCounter += 1
-        if (stableInternetCounter == Utility.STABLE_INTERNET_COUNT):
+        if (stableInternetCounter >= Utility.STABLE_INTERNET_COUNT):
             self.statusQueue.put(Utility.QMSG_IDLE)
             stableInternet = True
         else:
