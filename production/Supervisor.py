@@ -55,6 +55,16 @@ class Supervisor(object):
         myGui = tsgui.FrontEnd(self.guiQueue, self.statusQueue)
         myGui.run()
         
+    def createImageDir(self):
+        print imgdir
+        if not os.path.isdir(imgdir):
+            try:
+                os.makedirs(imgdir)
+            except OSError as exception:
+                if exception.errno != errno.EEXIST:
+                    raise
+        
+        
     def checkInternet(self):
         self.stableInternetCounter = 0
         for i in range(Utility.STABLE_INTERNET_COUNT):
@@ -105,18 +115,24 @@ class Supervisor(object):
             print "Something went wrong with the ReaderMsgQueue!"
         return messageStatus
     
+    def processHandlerMsg(self):
+        if not self.handlerQueue.empty():
+            handlerMsg = Utility.readMessageQueue(self.handlerQueue) 
+            if handlerMsg == Utility.QMSG_UPLOAD:
+                self.statusQueue.put(Utility.QMSG_UPLOAD) 
+            elif handlerMsg == Utility.QMSG_UPLOAD_DONE:
+                self.statusQueue.put(Utility.QMSG_UPLOAD_DONE)
+            elif handlerMsg == Utility.QMSG_HANDLE_NONE:
+                self.statusQueue.put(Utility.QMSG_HANDLE_NONE)
+            else:
+                self.statusQueue.put("Unknown Message from handlerQueue")
+    
     def run(self):
         print "Supervisor, checking in! pid:", os.getpid()
         # If image directory does not exist yet, create it!
         config = Utility.getProjectConfig()
         imgdir = config.get('directories','imagedirectory')
-        print imgdir
-        if not os.path.isdir(imgdir):
-            try:
-                os.makedirs(imgdir)
-            except OSError as exception:
-                if exception.errno != errno.EEXIST:
-                    raise
+        self.createImageDir()
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
         # Establish whether we have stable internet
@@ -135,6 +151,7 @@ class Supervisor(object):
                         # REFACTOR THIS CODE, DON'T FORGET! try Supervisor.initialScan()
                     print "Supervisor handles Upload job here"
                     self.runReader()
+                    scanMsg = Utility.readMessageQueue(self.readerQueue)
                     if self.isScanMessageFail():
                         continue
                     if self.stableInternet: # only start Handler if stable connection
@@ -154,16 +171,7 @@ class Supervisor(object):
                 self.runHandler()
             
             time.sleep(Utility.POLL_TIME) # wait for handlerProcess to actually start
-            if not self.handlerQueue.empty():
-                handlerMsg = Utility.readMessageQueue(self.handlerQueue) 
-                if handlerMsg == Utility.QMSG_UPLOAD:
-                    self.statusQueue.put(Utility.QMSG_UPLOAD) 
-                elif handlerMsg == Utility.QMSG_UPLOAD_DONE:
-                    self.statusQueue.put(Utility.QMSG_UPLOAD_DONE)
-                elif handlerMsg == Utility.QMSG_HANDLE_NONE:
-                    self.statusQueue.put(Utility.QMSG_HANDLE_NONE)
-                else:
-                    self.statusQueue.put("Unknown Message from handlerQueue")
+            self.processHandlerMsg()
             
             # Check current internet connection, allowing for some fluctuation in results    
             self.updateInternet()
