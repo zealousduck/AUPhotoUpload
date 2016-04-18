@@ -61,7 +61,7 @@ class FrontEnd(object):
         displayText = ""
         whichButton = 0
         if(pendingStatus == Utility.QMSG_SCAN):
-            displayText = "Scanning\nFor New\nImages..."
+            displayText = "Scanning and\nDownloading New\nImages\n(This could\ntake a while...)"
             whichButton = 4
         elif(pendingStatus == Utility.QMSG_SCAN_DONE):
             displayText = "Scan\nComplete."

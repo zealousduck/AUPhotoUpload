@@ -89,4 +89,3 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
                 print 'Camera is either not connected or not supported'
                 raise Exception('Failed to download images from camera')
                 
-    
