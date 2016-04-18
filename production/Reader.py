@@ -25,6 +25,7 @@ class Reader(object):
     def run(self):
         print "Hi, I'm a Reader!"
         status = Utility.readMessageQueue(self.myOrders)
+        print "READER DEBUG:", status
         try:
             if status == Utility.QMSG_SCAN:
                 camera_filenames_to_file(Utility.NEW_PICS_FILE_NAME)
