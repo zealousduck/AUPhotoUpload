@@ -63,11 +63,14 @@ class Supervisor(object):
             stableInternet = False
         # Initialize with all images currently on camera
         self.statusQueue.put(Utility.QMSG_SCAN)
+        initialScanFail = True
         try:
             Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
             self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+            initialScanFail = False
         except:
             self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
+            initialScanFail = True
         time.sleep(Utility.POLL_TIME)
         handlerProcess = None
         handlerDelayed = False
@@ -76,6 +79,16 @@ class Supervisor(object):
             if not self.guiQueue.empty():
                 job = self.guiQueue.get()
                 if job == Utility.QMSG_START:
+                    if initialScanFail:
+                        try: # OH GOD PLEASE REFACTOR THIS DUPLICATED CODE !!!!!!!!!!!!!!
+                            Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
+                            self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+                            initialScanFail = False
+                        except:
+                            self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
+                            initialScanFail = True
+                        continue # cannot complete job as normal if no baseline scan
+                        # REFACTOR THIS CODE, DON'T FORGET! try Supervisor.initialScan()
                     print "Supervisor handles Upload job here"
                     readerProcess = Process(target = self.startReader)
                     self.readerQueue.put(Utility.QMSG_SCAN)
