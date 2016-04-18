@@ -22,17 +22,34 @@ class Supervisor(object):
         self.handlerQueue = Queue()
         self.readerQueue = Queue()
         self.statusQueue = Queue()
+        self.readerProcess = None
+        self.handlerProcess = None
         self.didScanFail = False
         self.stableInternet = False
+        self.handlerDelayed = False
         self.stableInternetCounter = 0
     
     def startReader(self):
         reader = Reader.Reader(self.readerQueue)
         reader.run()
-    
+        
+    def runReader(self):
+        self.readerProcess = Process(target = self.startReader)
+        self.readerQueue.put(Utility.QMSG_SCAN)
+        self.statusQueue.put(Utility.QMSG_SCAN)
+        self.readerProcess.start()
+        # wait for reader to finish scanning
+        self.readerProcess.join()
+        
     def startHandler(self):
         handler = Handler.Handler(self.handlerQueue)
         handler.run()
+        
+    def runHandler(self):
+        self.handlerProcess = Process(target = self.startHandler)
+        self.handlerQueue.put(Utility.QMSG_HANDLE)
+        self.handlerProcess.start()
+        self.handlerDelayed = False
         
     def startGUI(self):
         myGui = tsgui.FrontEnd(self.guiQueue, self.statusQueue)
@@ -76,6 +93,18 @@ class Supervisor(object):
             self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
             self.didScanFail = True
             
+    def isScanMessageFail(self):
+        messageStatus = False
+        scanMsg = Utility.readMessageQueue(self.readerQueue)
+        if scanMsg == Utility.QMSG_SCAN_FAIL:
+            self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
+            messageStatus = True # failed, tell GUI but ignore the rest of this job
+        elif scanMsg == Utility.QMSG_SCAN_DONE:
+            self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+        else:
+            print "Something went wrong with the ReaderMsgQueue!"
+        return messageStatus
+    
     def run(self):
         print "Supervisor, checking in! pid:", os.getpid()
         # If image directory does not exist yet, create it!
@@ -96,9 +125,6 @@ class Supervisor(object):
         self.statusQueue.put(Utility.QMSG_SCAN)
         self.tryScan()
         time.sleep(Utility.POLL_TIME)
-        handlerProcess = None
-        handlerDelayed = False
-        readerProcess = None
         while True:
             if not self.guiQueue.empty():
                 job = self.guiQueue.get()
@@ -108,31 +134,16 @@ class Supervisor(object):
                         continue # cannot complete job as normal if no baseline scan
                         # REFACTOR THIS CODE, DON'T FORGET! try Supervisor.initialScan()
                     print "Supervisor handles Upload job here"
-                    readerProcess = Process(target = self.startReader)
-                    self.readerQueue.put(Utility.QMSG_SCAN)
-                    self.statusQueue.put(Utility.QMSG_SCAN)
-                    readerProcess.start()
-                    # wait for reader to finish scanning
-                    readerProcess.join()
+                    self.runReader()
                     scanMsg = Utility.readMessageQueue(self.readerQueue)
-                    if scanMsg == Utility.QMSG_SCAN_FAIL:
-                        self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
-                        scanMsg = 0 
-                        continue # failed, tell GUI but ignore the rest of this job
-                    elif scanMsg == Utility.QMSG_SCAN_DONE:
-                        self.statusQueue.put(Utility.QMSG_SCAN_DONE)
-                        scanMsg = 0
-                    else:
-                        print "Something went wrong with the ReaderMsgQueue!"
+                    if self.isScanMessageFail():
+                        continue
                     if self.stableInternet: # only start Handler if stable connection
-                        handlerProcess = Process(target = self.startHandler)
-                        self.handlerQueue.put(Utility.QMSG_HANDLE)
-                        handlerProcess.start()
-                        handlerDelayed = False
+                        self.runHandler()
                     else:
                         time.sleep(Utility.POLL_TIME)
                         self.statusQueue.put(Utility.QMSG_INTERNET_NO)
-                        handlerDelayed = True
+                        self.handlerDelayed = True
                 elif job == Utility.QMSG_SETTINGS:
                     print "Supervisor handles Settings job here if needed"
                 else:
@@ -140,11 +151,8 @@ class Supervisor(object):
             # endif self.guiQueue.empty()
             
             # Start upload if delayed and internet is now stable
-            if handlerDelayed and self.stableInternet:
-                handlerProcess = Process(target = self.startHandler)
-                self.handlerQueue.put(Utility.QMSG_HANDLE)
-                handlerProcess.start()
-                handlerDelayed = False   
+            if self.handlerDelayed and self.stableInternet:
+                self.runHandler()
             
             time.sleep(Utility.POLL_TIME) # wait for handlerProcess to actually start
             if not self.handlerQueue.empty():
