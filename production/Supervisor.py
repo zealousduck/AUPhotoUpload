@@ -63,8 +63,11 @@ class Supervisor(object):
             stableInternet = False
         # Initialize with all images currently on camera
         self.statusQueue.put(Utility.QMSG_SCAN)
-        Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
-        self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+        try:
+            Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
+            self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+        except:
+            self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
         time.sleep(Utility.POLL_TIME)
         handlerProcess = None
         handlerDelayed = False
