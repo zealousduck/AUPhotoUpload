@@ -25,12 +25,16 @@ class Reader(object):
     def run(self):
         print "Hi, I'm a Reader!"
         status = Utility.readMessageQueue(self.myOrders)
-        if status == Utility.QMSG_SCAN:
-            camera_filenames_to_file(Utility.NEW_PICS_FILE_NAME)
-            downloadNewImages(fileNameOld=Utility.OLD_PICS_FILE_NAME, fileNameNew=Utility.NEW_PICS_FILE_NAME)
-            os.rename(Utility.NEW_PICS_FILE_NAME, Utility.OLD_PICS_FILE_NAME)
+        try:
+            if status == Utility.QMSG_SCAN:
+                camera_filenames_to_file(Utility.NEW_PICS_FILE_NAME)
+                downloadNewImages(fileNameOld=Utility.OLD_PICS_FILE_NAME, fileNameNew=Utility.NEW_PICS_FILE_NAME)
+                os.rename(Utility.NEW_PICS_FILE_NAME, Utility.OLD_PICS_FILE_NAME)
+        except Exception as e:
+            print e
+            self.myOrders.put(Utility.QMSG_SCAN_FAIL)
         print "Reader is exiting."
-        # Put actual cleanup/saving code here!
+        self.myOrders.put(Utility.QMSG_SCAN_DONE)
         print "Reader successfully exited."
     
 def camera_filenames_to_file(outputFileName=None):
@@ -44,6 +48,7 @@ def camera_filenames_to_file(outputFileName=None):
             subprocess.check_call(['gphoto2', '-L'], stdout=outFile) #shell=False
         except subprocess.CalledProcessError:
             print 'Camera is either not connected or not supported' #There is no error in this case. We get the proper outputfile
+            raise Exception('Failed to pull image list from camera')
         outFile.close()
         
 def __getImageNumber(line=None):
@@ -81,5 +86,6 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
                 subprocess.check_output(['gphoto2','--get-file', imgNumber])
             except subprocess.CalledProcessError:
                 print 'Camera is either not connected or not supported'
+                raise Exception('Failed to download images from camera')
                 
     
