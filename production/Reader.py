@@ -31,11 +31,11 @@ class Reader(object):
                 camera_filenames_to_file(Utility.NEW_PICS_FILE_NAME)
                 downloadNewImages(fileNameOld=Utility.OLD_PICS_FILE_NAME, fileNameNew=Utility.NEW_PICS_FILE_NAME)
                 os.rename(Utility.NEW_PICS_FILE_NAME, Utility.OLD_PICS_FILE_NAME)
+                self.myOrders.put(Utility.QMSG_SCAN_DONE)
         except Exception as e:
             print e
             self.myOrders.put(Utility.QMSG_SCAN_FAIL)
         print "Reader is exiting."
-        self.myOrders.put(Utility.QMSG_SCAN_DONE)
         print "Reader successfully exited."
     
 def camera_filenames_to_file(outputFileName=None):
