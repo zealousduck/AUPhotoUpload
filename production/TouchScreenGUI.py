@@ -60,19 +60,22 @@ class FrontEnd(object):
         displayText = ""
         whichButton = 0
         if(pendingStatus == Utility.QMSG_SCAN):
-            displayText = "Scanning\n For New\n Images..."
+            displayText = "Scanning\nFor New\nImages..."
             whichButton = 4
         elif(pendingStatus == Utility.QMSG_SCAN_DONE):
-            displayText = "Scan\n Complete."
+            displayText = "Scan\nComplete."
+            whichButton = 4
+        elif(pendingStatus == Utility.QMSG_SCAN_FAIL):
+            displayText = "Scan\nFailed."
             whichButton = 4
         elif(pendingStatus == Utility.QMSG_UPLOAD):
-            displayText = "Uploading\n In\n Progress..."
+            displayText = "Uploading\nIn\nProgress..."
             whichButton = 4
         elif(pendingStatus == Utility.QMSG_UPLOAD_DONE):
-            displayText = "Uploading\n Complete."
+            displayText = "Uploading\nComplete."
             whichButton = 4
         elif(pendingStatus == Utility.QMSG_HANDLE_NONE):
-            displayText = "No new\n images\n found."
+            displayText = "No new\nimages\nfound."
             whichButton = 4
         elif(pendingStatus == Utility.QMSG_IDLE):
             displayText = "Idle"
