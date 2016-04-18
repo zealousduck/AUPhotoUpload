@@ -25,12 +25,17 @@ class Reader(object):
     def run(self):
         print "Hi, I'm a Reader!"
         status = Utility.readMessageQueue(self.myOrders)
-        if status == Utility.QMSG_SCAN:
-            camera_filenames_to_file(Utility.NEW_PICS_FILE_NAME)
-            downloadNewImages(fileNameOld=Utility.OLD_PICS_FILE_NAME, fileNameNew=Utility.NEW_PICS_FILE_NAME)
-            os.rename(Utility.NEW_PICS_FILE_NAME, Utility.OLD_PICS_FILE_NAME)
+        print "READER DEBUG:", status
+        try:
+            if status == Utility.QMSG_SCAN:
+                camera_filenames_to_file(Utility.NEW_PICS_FILE_NAME)
+                downloadNewImages(fileNameOld=Utility.OLD_PICS_FILE_NAME, fileNameNew=Utility.NEW_PICS_FILE_NAME)
+                os.rename(Utility.NEW_PICS_FILE_NAME, Utility.OLD_PICS_FILE_NAME)
+                self.myOrders.put(Utility.QMSG_SCAN_DONE)
+        except Exception as e:
+            print e
+            self.myOrders.put(Utility.QMSG_SCAN_FAIL)
         print "Reader is exiting."
-        # Put actual cleanup/saving code here!
         print "Reader successfully exited."
     
 def camera_filenames_to_file(outputFileName=None):
@@ -44,8 +49,9 @@ def camera_filenames_to_file(outputFileName=None):
             subprocess.check_call(['gphoto2', '-L'], stdout=outFile) #shell=False
         except subprocess.CalledProcessError:
             print 'Camera is either not connected or not supported' #There is no error in this case. We get the proper outputfile
-
-    outFile.close()
+            raise Exception('Failed to pull image list from camera')
+        outFile.close()
+        
 def __getImageNumber(line=None):
     if line is None:
         raise Exception('getImageNumber:  missing line string parameter')
@@ -81,13 +87,5 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
                 subprocess.check_output(['gphoto2','--get-file', imgNumber])
             except subprocess.CalledProcessError:
                 print 'Camera is either not connected or not supported'
+                raise Exception('Failed to download images from camera')
                 
-
-# if __name__ == '__main__':
-#     nFile = "newPics"
-#     oFile = "oldPics"
-#     camera_filenames_to_file(oFile)     #Runs whenever supervisor is launched
-    #Waits for new pictures to be taken
-#     camera_filenames_to_file(nFile) #Runs whenever button click for upload photo is launched.
-#     downloadNewImages(oFile,nFile) #We will probably need to point this to the proper directory later on
-    

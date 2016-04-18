@@ -10,6 +10,7 @@ CONFIG_FILE_NAME = 'photoUpload.cfg'
 UPLOADS_FILE_NAME = 'imageList.txt'
 DEFAULT_CONFIG = 'photoUploadDefaults.cfg'
 POLL_TIME = 1   # in seconds
+STABLE_INTERNET_COUNT = 5
 # OLD_PICS_FILE_NAME = '/home/chris/workspace/AUPhotoUpload/production/oldPics.txt'
 # NEW_PICS_FILE_NAME = '/home/chris/workspace/AUPhotoUpload/production/newPics.txt'
 OLD_PICS_FILE_NAME = '/home/pi/AUPhotoUpload/production/oldPics.txt' #Place holder for the absolute path for the pi.
@@ -19,16 +20,20 @@ QMSG_START = 'msg_start'
 QMSG_FILE_EXPLORER = 'msg_file_explorer'
 QMSG_SCAN = 'msg_reader_scan'
 QMSG_SCAN_DONE = 'msg_reader_done'
+QMSG_SCAN_FAIL = 'msg_reader_fail'
 QMSG_HANDLE = 'msg_handler_start'
 QMSG_HANDLE_NONE = 'msg_handler_none'
 QMSG_UPLOAD = 'msg_uploader_working'
 QMSG_UPLOAD_DONE = 'msg_uploader_done'
 QMSG_IDLE = 'msg_idle'
+QMSG_INTERNET_NO = 'msg_no_internet'
+QMSG_INTERNET_YES = 'msg_yes_internet'
 
 import ConfigParser
 import os
 import Configurer
 import time
+import socket
 
 ''' 
 getProjectConfig() loads the .cfg file into a parseable form. It then
@@ -58,6 +63,20 @@ def readMessageQueue(queue=None):
         time.sleep(POLL_TIME)
     return queue.get()
 
+'''
+checkInternetConnection() allows the application to check the presence
+    of an internet connection without utilizing a DNS lookup. By default,
+    it utilizes Google's DNS servers, connecting via TCP DNS.
+    See: http://stackoverflow.com/questions/3764291/checking-network-connection
+'''
+def checkInternetConnection(host='8.8.8.8', port=53):
+    try:
+        socket.setdefaulttimeout(POLL_TIME)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host,port))
+        return True
+    except Exception as ex:
+        print ex
+    return False
 
 if __name__ == '__main__':
     getProjectConfig()
