@@ -57,6 +57,7 @@ class FrontEnd(object):
         return root
     
     def DisplayCurrentStatus(self, pendingStatus):
+        # NEEDS REFACTORING INTO SOME DICTIONARY SHIT
         displayText = ""
         whichButton = 0
         if(pendingStatus == Utility.QMSG_SCAN):
@@ -65,9 +66,11 @@ class FrontEnd(object):
         elif(pendingStatus == Utility.QMSG_SCAN_DONE):
             displayText = "Scan\nComplete."
             whichButton = 4
+            self.button1["text"] = "Start Upload"
         elif(pendingStatus == Utility.QMSG_SCAN_FAIL):
             displayText = "Scan\nFailed."
             whichButton = 4
+            self.button1["text"] = "Scan\nCamera"
         elif(pendingStatus == Utility.QMSG_UPLOAD):
             displayText = "Uploading\nIn\nProgress..."
             whichButton = 4
