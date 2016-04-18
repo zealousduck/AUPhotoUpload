@@ -86,10 +86,13 @@ class Supervisor(object):
                     scanMsg = Utility.readMessageQueue(self.readerQueue)
                     if scanMsg == Utility.QMSG_SCAN_FAIL:
                         self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
+                        scanMsg = 0 
                         continue # failed, tell GUI but ignore the rest of this job
-                    else:
+                    elif scanMsg == Utility.QMSG_SCAN_DONE:
                         self.statusQueue.put(Utility.QMSG_SCAN_DONE)
-                    
+                        scanMsg = 0
+                    else:
+                        print "Something went wrong with the ReaderMsgQueue!"
                     if stableInternet: # only start Handler if stable connection
                         handlerProcess = Process(target = self.startHandler)
                         self.handlerQueue.put(Utility.QMSG_HANDLE)
