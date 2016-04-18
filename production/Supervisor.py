@@ -158,7 +158,6 @@ class Supervisor(object):
                         self.runHandler()
                     else:
                         time.sleep(Utility.POLL_TIME)
-                        self.statusQueue.put(Utility.QMSG_INTERNET_NO)
                         self.handlerDelayed = True
                 elif job == Utility.QMSG_SETTINGS:
                     print "Supervisor handles Settings job here if needed"
