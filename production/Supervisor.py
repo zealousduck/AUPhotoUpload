@@ -22,6 +22,9 @@ class Supervisor(object):
         self.handlerQueue = Queue()
         self.readerQueue = Queue()
         self.statusQueue = Queue()
+        self.didScanFail = False
+        self.stableInternet = False
+        self.stableInternetCounter = 0
     
     def startReader(self):
         reader = Reader.Reader(self.readerQueue)
@@ -34,7 +37,45 @@ class Supervisor(object):
     def startGUI(self):
         myGui = tsgui.FrontEnd(self.guiQueue, self.statusQueue)
         myGui.run()
-    
+        
+    def checkInternet(self):
+        self.stableInternetCounter = 0
+        for i in range(Utility.STABLE_INTERNET_COUNT):
+            if Utility.checkInternetConnection():
+                self.stableInternetCounter += 1
+        if (self.stableInternetCounter >= Utility.STABLE_INTERNET_COUNT):
+            self.statusQueue.put(Utility.QMSG_IDLE)
+            self.stableInternet = True
+        else:
+            self.statusQueue.put(Utility.QMSG_INTERNET_NO)
+            self.stableInternet = False
+            
+    def updateInternet(self):
+        if Utility.checkInternetConnection():
+            if self.stableInternetCounter < Utility.STABLE_INTERNET_COUNT:
+                self.stableInternetCounter += 1
+            else:
+                self.stableInternet = True
+                self.statusQueue.put(Utility.QMSG_INTERNET_YES)
+                #print 'DEBUG: checkInternetConnection() == True'
+        else:
+            if (self.stableInternetCounter > 0): # only count down to 0
+                self.stableInternetCounter -= 1 
+            if self.stableInternetCounter < Utility.STABLE_INTERNET_COUNT/2:
+                self.stableInternet = False
+                self.statusQueue.put(Utility.QMSG_INTERNET_NO)
+                #print 'DEBUG: checkInternetConnection() == False'
+        print 'DEBUG: stableInternet:', self.stableInternet, 'stableInternetCounter:', self.stableInternetCounter
+        
+    def tryScan(self):
+        try:
+            Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
+            self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+            self.didScanFail = False
+        except:
+            self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
+            self.didScanFail = True
+            
     def run(self):
         print "Supervisor, checking in! pid:", os.getpid()
         # If image directory does not exist yet, create it!
@@ -50,27 +91,10 @@ class Supervisor(object):
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
         # Establish whether we have stable internet
-        stableInternetCounter = 0
-        stableInternet = False  
-        for i in range(Utility.STABLE_INTERNET_COUNT):
-            if Utility.checkInternetConnection():
-                stableInternetCounter += 1
-        if (stableInternetCounter >= Utility.STABLE_INTERNET_COUNT):
-            self.statusQueue.put(Utility.QMSG_IDLE)
-            stableInternet = True
-        else:
-            self.statusQueue.put(Utility.QMSG_INTERNET_NO)
-            stableInternet = False
+        self.checkInternet()
         # Initialize with all images currently on camera
         self.statusQueue.put(Utility.QMSG_SCAN)
-        initialScanFail = True
-        try:
-            Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
-            self.statusQueue.put(Utility.QMSG_SCAN_DONE)
-            initialScanFail = False
-        except:
-            self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
-            initialScanFail = True
+        self.tryScan()
         time.sleep(Utility.POLL_TIME)
         handlerProcess = None
         handlerDelayed = False
@@ -79,14 +103,8 @@ class Supervisor(object):
             if not self.guiQueue.empty():
                 job = self.guiQueue.get()
                 if job == Utility.QMSG_START:
-                    if initialScanFail:
-                        try: # OH GOD PLEASE REFACTOR THIS DUPLICATED CODE !!!!!!!!!!!!!!
-                            Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
-                            self.statusQueue.put(Utility.QMSG_SCAN_DONE)
-                            initialScanFail = False
-                        except:
-                            self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
-                            initialScanFail = True
+                    if self.didScanFail:
+                        self.tryScan()
                         continue # cannot complete job as normal if no baseline scan
                         # REFACTOR THIS CODE, DON'T FORGET! try Supervisor.initialScan()
                     print "Supervisor handles Upload job here"
@@ -106,7 +124,7 @@ class Supervisor(object):
                         scanMsg = 0
                     else:
                         print "Something went wrong with the ReaderMsgQueue!"
-                    if stableInternet: # only start Handler if stable connection
+                    if self.stableInternet: # only start Handler if stable connection
                         handlerProcess = Process(target = self.startHandler)
                         self.handlerQueue.put(Utility.QMSG_HANDLE)
                         handlerProcess.start()
@@ -122,7 +140,7 @@ class Supervisor(object):
             # endif self.guiQueue.empty()
             
             # Start upload if delayed and internet is now stable
-            if handlerDelayed and stableInternet:
+            if handlerDelayed and self.stableInternet:
                 handlerProcess = Process(target = self.startHandler)
                 self.handlerQueue.put(Utility.QMSG_HANDLE)
                 handlerProcess.start()
@@ -140,23 +158,8 @@ class Supervisor(object):
                 else:
                     self.statusQueue.put("Unknown Message from handlerQueue")
             
-            # Check current internet connection, allowing for some fluctuation in results
-            if Utility.checkInternetConnection():
-                if stableInternetCounter < Utility.STABLE_INTERNET_COUNT:
-                    stableInternetCounter += 1
-                else:
-                    stableInternet = True
-                    self.statusQueue.put(Utility.QMSG_INTERNET_YES)
-                #print 'DEBUG: checkInternetConnection() == True'
-            else:
-                if (stableInternetCounter > 0): # only count down to 0
-                    stableInternetCounter -= 1 
-                if stableInternetCounter < Utility.STABLE_INTERNET_COUNT/2:
-                    stableInternet = False
-                    self.statusQueue.put(Utility.QMSG_INTERNET_NO)
-                #print 'DEBUG: checkInternetConnection() == False'
-            print 'DEBUG: stableInternet:', stableInternet, 'stableInternetCounter:', stableInternetCounter    
-        
+            # Check current internet connection, allowing for some fluctuation in results    
+            self.updateInternet()
             time.sleep(Utility.POLL_TIME)
         # end while loop
     
