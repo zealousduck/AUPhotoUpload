@@ -83,7 +83,10 @@ class Handler(object):
                     f.write(element + '\n')
                 f.close()
                 for element in renamedList:
-                    os.remove(self.directoryName + '/' + element)
+                    try:
+                        os.remove(self.directoryName + '/' + element)
+                    except OSError:
+                        print "failed to delete file " + element + "."
             else:
                 self.exitMessage = Utility.QMSG_HANDLE_NONE
             
