@@ -56,6 +56,8 @@ class Supervisor(object):
         myGui.run()
         
     def createImageDir(self):
+        config = Utility.getProjectConfig()
+        imgdir = config.get('directories','imagedirectory')
         print imgdir
         if not os.path.isdir(imgdir):
             try:
@@ -130,8 +132,8 @@ class Supervisor(object):
     def run(self):
         print "Supervisor, checking in! pid:", os.getpid()
         # If image directory does not exist yet, create it!
-        config = Utility.getProjectConfig()
-        imgdir = config.get('directories','imagedirectory')
+        
+        
         self.createImageDir()
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
