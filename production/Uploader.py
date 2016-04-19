@@ -143,6 +143,9 @@ class Uploader(object):
             print "Error uploading %s: I/O error(%s): %s" % (localName, localError.errno, localError.strerror)
     
     def uploadBatch(self):
+        workerStorage = []
+        totalWorkers = 3
+        numWorkers = 0
         numUploads = 0
         time.sleep(1)
         if not self.queue.empty():
@@ -150,25 +153,24 @@ class Uploader(object):
             failQueue = Queue()
             while not self.queue.empty():
                 managedQueue.put(self.queue.get())
-                numUploads = numUploads + 1
+                numUploads += 1
                 time.sleep(1)
             print "Starting Batch of " + str(numUploads) + " images."
-            
-            numWorkers = 0
-            for workerCount in range(4):
-                UploadWorker(managedQueue,failQueue,self.myClient).start()
-                numWorkers = workerCount
-                
-            print str(numWorkers) + " workers started." 
-                
-            for workerCount in range(4):
+            for workerCount in range(totalWorkers):
                 managedQueue.put(None)
-                numWorkers = workerCount
+            for workerCount in range(totalWorkers):
+                workerStorage.append(UploadWorker(managedQueue,failQueue,self.myClient))
+                numWorkers += 1
+            for worker in workerStorage:
+                worker.start()
+            print str(numWorkers) + " workers started." 
             #self.uploadFile(self.dequeue())
             time.sleep(Utility.POLL_TIME) # The .empty() method is instantaneously unreliable after emptying a queue 
+            print "Waiting for uploads to finish..."
+            for worker in workerStorage:
+                worker.join()
             while not managedQueue.empty():
                 time.sleep(Utility.POLL_TIME)
-                print "Waiting for uploads to finish..."
             print str(numWorkers) + " workers ended."
             time.sleep(1)
             while not failQueue.empty():
