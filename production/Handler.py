@@ -64,6 +64,7 @@ class Handler(object):
             renamedList = []
             for element in listToUpload:
                 renamedList.append(self.renameWithTimestamp(element))
+            print 'len(listToUpload', len(listToUpload)
             if len(listToUpload) != 0:
                 self.exitMessage = Utility.QMSG_UPLOAD_DONE
                 f = open(self.listFileName, 'a')
@@ -88,6 +89,7 @@ class Handler(object):
                     except OSError:
                         print "failed to delete file " + element + "."
             else:
+                print 'QMSG_HANDLE_NONE'
                 self.exitMessage = Utility.QMSG_HANDLE_NONE       
         # once uploader done, exit/send a message to supervisor "done" and then exit
         self.orders.put(self.exitMessage)
