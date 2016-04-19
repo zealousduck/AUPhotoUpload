@@ -83,7 +83,7 @@ class Handler(object):
                     f.write(element + '\n')
                 f.close()
                 for element in renamedList:
-                    os.remove(self.directoryName + '/' + name)
+                    os.remove(self.directoryName + '/' + element)
             else:
                 self.exitMessage = Utility.QMSG_HANDLE_NONE
             
