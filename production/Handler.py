@@ -49,7 +49,9 @@ class Handler(object):
 #         print "Handler successfully exited."
         
     def run(self):
+        print 'getting status...'
         status = Utility.readMessageQueue(self.orders)
+        print status
         if status == Utility.QMSG_HANDLE:
             print 'QMSG_HANDLE'
             oldList = []

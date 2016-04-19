@@ -203,6 +203,7 @@ class Supervisor(object):
         if not self.isScanMessageFail(): 
             print 'scan does not fail!'
             if self.stableInternet: # only start Handler if stable connection
+                self.handlerQueue.put(Utility.QMSG_HANDLE)
                 self.runHandler()
                 print 'handler run!'
                 self.handlerDelayed = False
