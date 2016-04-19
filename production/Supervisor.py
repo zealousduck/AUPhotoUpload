@@ -153,7 +153,6 @@ class Supervisor(object):
                         # REFACTOR THIS CODE, DON'T FORGET! try Supervisor.initialScan()
                     print "Supervisor handles Upload job here"
                     self.runReader()
-                    scanMsg = Utility.readMessageQueue(self.readerQueue)
                     if self.isScanMessageFail():
                         continue
                     if self.stableInternet: # only start Handler if stable connection
