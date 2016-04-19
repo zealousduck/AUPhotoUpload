@@ -40,14 +40,16 @@ class UploadWorker(Process):
                 try:
                     self.myClient.put_file(str('/' + self.localName), localFile)
                 except dropbox.rest.ErrorResponse as myError:
-                    dropResponse = ""
+                    dropResponse = "Unknown Error"
                     if myError.status == 400:
                         dropResponse = "Bad Request (http 400)."
                     elif myError.status == 507:
                         dropResponse = "User over data quota (http 507)."
-                    self.errorQueue.put("Upload failed for local file " + self.localName + ", Dropbox replied with: " + dropResponse)
+                    print "Upload failed for local file " + self.localName + ", Dropbox replied with: " + dropResponse
+                    self.errorQueue.put(self.localName)
         except IOError as localError:
-            self.errorQueue.put("Error uploading " + self.localName + ": I/O error(" + localError.errno + "): " + localError.strerror)
+            print "Error uploading " + self.localName + ": I/O error(" + localError.errno + "): " + localError.strerror
+            self.errorQueue.put(self.localName)
         print "upload complete for", self.localName
 
 class Uploader(object):
@@ -168,8 +170,12 @@ class Uploader(object):
                 time.sleep(Utility.POLL_TIME)
                 print "Waiting for uploads to finish..."
             print str(numWorkers) + " workers ended."
+            time.sleep(1)
             while not failQueue.empty():
-                print "Failed image upload: " + failQueue.get()
+                self.queue.put(failQueue.get())
+                #retryImage = failQueue.get()
+                #print "Failed image upload: " + retryImage + ", retrying..."
+                
             print "Batch Upload finished..."
         else:
             print "Queue currently empty, canceling upload."
