@@ -51,6 +51,7 @@ class Handler(object):
     def run(self):
         status = Utility.readMessageQueue(self.orders)
         if status == Utility.QMSG_HANDLE:
+            print 'QMSG_HANDLE'
             oldList = []
             # pull the old list from disk, if it exists
             if os.path.isfile(self.listFileName):
@@ -58,13 +59,16 @@ class Handler(object):
                 for line in f:
                     oldList.append(line[:-1]) #ignore '/n' when read in
                 f.close()
+            print 'oldList appended to'
             # compare to current directory
             currentList = self.getDirectoryList(self.directoryName)
+            print 'len(currentList)', len(currentList)
             listToUpload = self.getListDifference(oldList, currentList)
+            print 'got listToUpload'
             renamedList = []
             for element in listToUpload:
                 renamedList.append(self.renameWithTimestamp(element))
-            print 'len(listToUpload', len(listToUpload)
+            print 'len(listToUpload)', len(listToUpload)
             if len(listToUpload) != 0:
                 self.exitMessage = Utility.QMSG_UPLOAD_DONE
                 f = open(self.listFileName, 'a')

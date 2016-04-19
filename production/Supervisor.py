@@ -79,7 +79,7 @@ class Supervisor(object):
         self.handlerProcess = Process(target = self.startHandler)
         self.handlerQueue.put(Utility.QMSG_HANDLE)
         self.handlerProcess.start()
-        self.handlerDelayed = False
+        
         
     '''
     verifyImageDirectory() makes sure that the program can access the necessary
@@ -205,6 +205,7 @@ class Supervisor(object):
             print 'scan does not fail!'
             if self.stableInternet: # only start Handler if stable connection
                 self.runHandler()
+                self.handlerDelayed = False
             else:
                 time.sleep(Utility.POLL_TIME)
                 self.handlerDelayed = True
