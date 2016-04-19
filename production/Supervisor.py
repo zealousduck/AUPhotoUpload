@@ -167,10 +167,10 @@ class Supervisor(object):
         if scanMsg == Utility.QMSG_SCAN_FAIL:
             self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
             messageStatus = True # failed, tell GUI but ignore the rest of this job
-            #self.didScanFail = True
+            self.didScanFail = True
         elif scanMsg == Utility.QMSG_SCAN_DONE:
             self.statusQueue.put(Utility.QMSG_SCAN_DONE)
-            #self.didScanFail = False
+            self.didScanFail = False
         else:
             print "Something went wrong with the ReaderMsgQueue!"
             messageStatus = False
@@ -202,6 +202,7 @@ class Supervisor(object):
     def startUploadJob(self):
         self.runReader()
         if not self.isScanMessageFail(): 
+            print 'scan does not fail!'
             if self.stableInternet: # only start Handler if stable connection
                 self.runHandler()
             else:
@@ -224,8 +225,10 @@ class Supervisor(object):
             if not self.userInputQueue.empty():
                 job = self.userInputQueue.get()
                 if (job == Utility.QMSG_START and self.didScanFail):
+                    print 'tryScan()'
                     self.tryScan()
                 elif (job == Utility.QMSG_START and not self.didScanFail):
+                    print 'startUploadJob()'
                     self.startUploadJob()
                 elif (job == Utility.QMSG_SETTINGS):
                     print "Supervisor handles Settings job here if needed"
