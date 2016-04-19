@@ -166,8 +166,10 @@ class Supervisor(object):
         if scanMsg == Utility.QMSG_SCAN_FAIL:
             self.statusQueue.put(Utility.QMSG_SCAN_FAIL)
             messageStatus = True # failed, tell GUI but ignore the rest of this job
+            #self.didScanFail = True
         elif scanMsg == Utility.QMSG_SCAN_DONE:
             self.statusQueue.put(Utility.QMSG_SCAN_DONE)
+            #self.didScanFail = False
         else:
             print "Something went wrong with the ReaderMsgQueue!"
             messageStatus = False
@@ -191,15 +193,19 @@ class Supervisor(object):
             else:
                 self.statusQueue.put("Unknown Message from handlerQueue")
     
+    '''
+    startUploadJob() is the "normal" workflow for when the user desires to 
+        pull images from the camera and upload them. It makes sure to only
+        activate Handler if the scan is successful.
+    '''
     def startUploadJob(self):
         self.runReader()
-        if self.isScanMessageFail():
-            continue
-        if self.stableInternet: # only start Handler if stable connection
-            self.runHandler()
-        else:
-            time.sleep(Utility.POLL_TIME)
-            self.handlerDelayed = True
+        if not self.isScanMessageFail(): 
+            if self.stableInternet: # only start Handler if stable connection
+                self.runHandler()
+            else:
+                time.sleep(Utility.POLL_TIME)
+                self.handlerDelayed = True
     
     '''
     run() is the entry-point and main loop for the PhotoUpload program.
@@ -217,9 +223,7 @@ class Supervisor(object):
             if not self.userInputQueue.empty():
                 job = self.userInputQueue.get()
                 if (job == Utility.QMSG_START and self.didScanFail):
-                    print "Supervisor handles Upload job here"
-                    if self.didScanFail:
-                        self.tryScan()
+                    self.tryScan()
                 elif (job == Utility.QMSG_START and not self.didScanFail):
                     self.startUploadJob()
                 elif (job == Utility.QMSG_SETTINGS):
