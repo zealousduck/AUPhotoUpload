@@ -103,8 +103,9 @@ class Supervisor(object):
     '''
     def initializeInternet(self):
         self.stableInternetCounter = 0
-        for i in range(Utility.STABLE_INTERNET_COUNT):
-            if Utility.checkInternetConnection():
+        for i in range(Utility.STABLE_INTERNET_COUNT + Utility.STABLE_INTERNET_COUNT/2):
+            if (Utility.checkInternetConnection() 
+                    and self.stableInternetCounter < Utility.STABLE_INTERNET_COUNT):
                 self.stableInternetCounter += 1
         if (self.stableInternetCounter >= Utility.STABLE_INTERNET_COUNT):
             self.statusQueue.put(Utility.QMSG_IDLE)
