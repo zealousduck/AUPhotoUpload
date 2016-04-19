@@ -98,6 +98,7 @@ class Supervisor(object):
         
     def tryScan(self):
         try:
+            self.statusQueue.put(Utility.QMSG_SCAN)
             Reader.camera_filenames_to_file(Utility.OLD_PICS_FILE_NAME)
             self.statusQueue.put(Utility.QMSG_SCAN_DONE)
             self.didScanFail = False
@@ -132,15 +133,12 @@ class Supervisor(object):
     def run(self):
         print "Supervisor, checking in! pid:", os.getpid()
         # If image directory does not exist yet, create it!
-        
-        
         self.createImageDir()
         guiProcess = Process(target = self.startGUI)
         guiProcess.start()
         # Establish whether we have stable internet
         self.checkInternet()
         # Initialize with all images currently on camera
-        self.statusQueue.put(Utility.QMSG_SCAN)
         self.tryScan()
         time.sleep(Utility.POLL_TIME)
         while True:
