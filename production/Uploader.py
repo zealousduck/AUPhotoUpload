@@ -164,8 +164,7 @@ class Uploader(object):
             for worker in workerStorage:
                 worker.start()
             print str(numWorkers) + " workers started." 
-            #self.uploadFile(self.dequeue())
-            time.sleep(Utility.POLL_TIME) # The .empty() method is instantaneously unreliable after emptying a queue 
+            time.sleep(Utility.POLL_TIME) 
             print "Waiting for uploads to finish..."
             for worker in workerStorage:
                 worker.join()
@@ -175,9 +174,7 @@ class Uploader(object):
             time.sleep(1)
             while not failQueue.empty():
                 self.queue.put(failQueue.get())
-                #retryImage = failQueue.get()
-                #print "Failed image upload: " + retryImage + ", retrying..."
-                
             print "Batch Upload finished..."
         else:
             print "Queue currently empty, canceling upload."
+            
