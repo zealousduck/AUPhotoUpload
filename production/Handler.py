@@ -69,8 +69,7 @@ class Handler(object):
                 f = open(self.listFileName, 'a')
                 for element in renamedList:  
                     self.enqueue(element) # rename and submit the renamed image name
-                    f.write(element + '\n')
-                f.close()
+                
                 uploaderProcess = Process(target = self.startUploader)
                 self.uploadOrders.put(Utility.QMSG_UPLOAD)
                 uploaderProcess.start()
@@ -78,6 +77,13 @@ class Handler(object):
                 self.orders.put(Utility.QMSG_UPLOAD)
                 # then enqueued, wait for uploader to finish
                 uploaderProcess.join()
+                while not self.queue.empty():
+                    renamedList.remove(self.queue.get())
+                for element in renamedList:
+                    f.write(element + '\n')
+                f.close()
+                for element in renamedList:
+                    os.remove(self.directoryName + '/' + name)
             else:
                 self.exitMessage = Utility.QMSG_HANDLE_NONE
             
