@@ -1,0 +1,6 @@
+#!/bin/bash
+curl -SLs https://apt.adafruit.com/add-pin | sudo bash
+sudo apt-get install raspberrypi-bootloader
+sudo apt-get install adafruit-pitft-helper
+
+# git clone https://github.com/zealousduck/AUPhotoUpload
