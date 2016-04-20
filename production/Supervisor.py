@@ -255,6 +255,7 @@ class Supervisor(object):
             # endif self.userInputQueue.empty()
             #self.printQueue(self.handlerQueue)
             if self.handlerDelayed and self.stableInternet:
+                self.handlerDelayed = False
                 self.runHandler()
             self.processHandlerMsg()
             self.updateInternet()
