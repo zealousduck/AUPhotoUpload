@@ -7,28 +7,31 @@ import os
 import PhotoUploadUtility as Utility
 from multiprocessing import Queue
 
+__WORKFLOW_BUTTON = 4
+__INTERNET_BUTTON = 2
 
 class FrontEnd(object):
-    messageDict = { Utility.QMSG_SCAN: "Scanning and\nDownloading New\nImages\n(This could\ntake a while...)",
-                    Utility.QMSG_SCAN_DONE: "Scan\nComplete.",
-                    Utility.QMSG_SCAN_FAIL: "Scan\nFailed.",
-                    Utility.QMSG_UPLOAD: "Uploading\nIn\nProgress...",
-                    Utility.QMSG_UPLOAD_DONE: "Uploading\nComplete.",
-                    Utility.QMSG_HANDLE_NONE: "No new\nimages\nfound.",
-                    Utility.QMSG_IDLE: "Idle",
-                    Utility.QMSG_INTERNET_NO: "No\nInternet\nConnection",
-                    Utility.QMSG_INTERNET_YES: "Internet\nConnection\nAvailable"};
+    statusDict = {  Utility.QMSG_SCAN: ("Scanning and\nDownloading New\nImages\n(This could\ntake a while...)",__WORKFLOW_BUTTON),
+                    Utility.QMSG_SCAN_DONE: ("Scan\nComplete.",__WORKFLOW_BUTTON),
+                    Utility.QMSG_SCAN_FAIL: ("Scan\nFailed.",__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD: ("Uploading\nIn\nProgress...",__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD_DONE: ("Uploading\nComplete.",__WORKFLOW_BUTTON),
+                    Utility.QMSG_HANDLE_NONE: ("No new\nimages\nfound.",__WORKFLOW_BUTTON),
+                    Utility.QMSG_IDLE: ("Idle",__WORKFLOW_BUTTON),
+                    Utility.QMSG_INTERNET_NO: ("No\nInternet\nConnection",__INTERNET_BUTTON),
+                    Utility.QMSG_INTERNET_YES: ("Internet\nConnection\nAvailable",__INTERNET_BUTTON)};
                     
-    buttonDict = {  Utility.QMSG_SCAN:         4,
-                    Utility.QMSG_SCAN_DONE:    4,
-                    Utility.QMSG_SCAN_FAIL:    4,
-                    Utility.QMSG_UPLOAD:       4,
-                    Utility.QMSG_UPLOAD_DONE:  4,
-                    Utility.QMSG_HANDLE_NONE:  4,
-                    Utility.QMSG_IDLE:         4,
-                    Utility.QMSG_INTERNET_NO:  2,
-                    Utility.QMSG_INTERNET_YES: 2};
-    errorButton = 4
+#     buttonDict = {  Utility.QMSG_SCAN:         4,
+#                     Utility.QMSG_SCAN_DONE:    4,
+#                     Utility.QMSG_SCAN_FAIL:    4,
+#                     Utility.QMSG_UPLOAD:       4,
+#                     Utility.QMSG_UPLOAD_DONE:  4,
+#                     Utility.QMSG_HANDLE_NONE:  4,
+#                     Utility.QMSG_IDLE:         4,
+#                     Utility.QMSG_INTERNET_NO:  2,
+#                     Utility.QMSG_INTERNET_YES: 2};
+
+    errorButton = __WORKFLOW_BUTTON
     errorStatus = "Error:\nUnknown\nStatus."
     
     def __init__(self, taskQueue, statusQueue):
@@ -38,10 +41,44 @@ class FrontEnd(object):
         self.currentStatus = Utility.QMSG_IDLE
         self.root = self.TkSetup()   
     
-    def run(self):
-        print "TouchScreenGUI, checking in! pid:", os.getpid()
-        self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in milliseconds
-        self.root.mainloop()
+    
+    def DisplayCurrentStatus(self, pendingStatus):
+        displayText = ""
+        whichButton = 0
+        if pendingStatus in FrontEnd.statusDict:
+            displayText, whichButton = FrontEnd.statusDict[pendingStatus]
+            #whichButton = FrontEnd.buttonDict[pendingStatus]
+        else:
+            displayText = FrontEnd.errorStatus
+            whichButton = FrontEnd.errorButton
+        if(pendingStatus == Utility.QMSG_SCAN_DONE):
+            self.button1["text"] = "Start Upload"
+        elif(pendingStatus == Utility.QMSG_SCAN_FAIL):
+            self.button1["text"] = "Scan\nCamera"
+        self.currentStatus = pendingStatus
+        if whichButton == __WORKFLOW_BUTTON:
+            self.button4["text"] = displayText
+        elif whichButton == __INTERNET_BUTTON:
+            self.button2["text"] = displayText
+    
+    def StartUpload(self, event):
+        self.queue.put(Utility.QMSG_START)
+        
+    def getMsgTask(self):
+        statusMessage = ""
+        if not (self.statusQueue.empty()):
+            statusMessage = self.statusQueue.get() 
+            self.DisplayCurrentStatus(statusMessage)
+ 
+        self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in ms
+    
+    def FileExplorer(self, event):
+        print("Test for script to file explorer")
+        self.queue.put(Utility.QMSG_FILE_EXPLORER)
+    
+    def Settings(self, event):
+        print("Test for script to settings")
+        self.queue.put(Utility.QMSG_SETTINGS)      
     
     def TkSetup(self):
         from Tkinter import *
@@ -76,42 +113,10 @@ class FrontEnd(object):
         self.button3.pack(side=LEFT)
         self.button4.pack(side=LEFT)
         return root
-    
-    def DisplayCurrentStatus(self, pendingStatus):
-        displayText = ""
-        whichButton = 0
-        if pendingStatus in FrontEnd.messageDict:
-            displayText = FrontEnd.messageDict[pendingStatus]
-            whichButton = FrontEnd.buttonDict[pendingStatus]
-        else:
-            displayText = FrontEnd.errorStatus
-            whichButton = FrontEnd.errorButton
-        if(pendingStatus == Utility.QMSG_SCAN_DONE):
-            self.button1["text"] = "Start Upload"
-        elif(pendingStatus == Utility.QMSG_SCAN_FAIL):
-            self.button1["text"] = "Scan\nCamera"
-        self.currentStatus = pendingStatus
-        if whichButton == 4:
-            self.button4["text"] = displayText
-        elif whichButton == 2:
-            self.button2["text"] = displayText
-    
-    def StartUpload(self, event):
-        self.queue.put(Utility.QMSG_START)
+
+    def run(self):
+        print "TouchScreenGUI, checking in! pid:", os.getpid()
+        self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in milliseconds
+        self.root.mainloop()
         
-    def getMsgTask(self):
-        statusMessage = ""
-        if not (self.statusQueue.empty()):
-            statusMessage = self.statusQueue.get() 
-            self.DisplayCurrentStatus(statusMessage)
- 
-        self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in ms
-    
-    def FileExplorer(self, event):
-        print("Test for script to file explorer")
-        self.queue.put(Utility.QMSG_FILE_EXPLORER)
-    
-    def Settings(self, event):
-        print("Test for script to settings")
-        self.queue.put(Utility.QMSG_SETTINGS)
         
