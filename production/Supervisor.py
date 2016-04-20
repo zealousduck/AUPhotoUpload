@@ -67,7 +67,7 @@ class Supervisor(object):
         self.handlerQueue.
     '''
     def startHandler(self):
-        handler = Handler.Handler(self.handlerQueue)
+        handler = Handler.Handler(self.handlerQueue, self.statusQueue)
         handler.run()
             
     '''
@@ -198,6 +198,19 @@ class Supervisor(object):
         pull images from the camera and upload them. It makes sure to only
         activate Handler if the scan is successful.
     '''
+    def printQueue(self, toPrintQueue):
+        print "Printing Queue"
+        time.sleep(1)
+        sizeyQueue = Queue()
+        sizey =  toPrintQueue.qsize()
+        for i in range(0, sizey):
+            watDaFug = toPrintQueue.get()
+            print watDaFug
+            sizeyQueue.put(watDaFug)
+        for i in range(0, sizey):
+            toPrintQueue.put(sizeyQueue.get())
+        time.sleep(1)
+    
     def startUploadJob(self):
         self.runReader()
         if not self.isScanMessageFail(): 
@@ -226,6 +239,8 @@ class Supervisor(object):
         time.sleep(Utility.POLL_TIME)
         while True:
             if not self.userInputQueue.empty():
+                
+                #self.printQueue(self.handlerQueue)
                 job = self.userInputQueue.get()
                 if (job == Utility.QMSG_START and self.didScanFail):
                     print 'tryScan()'
@@ -238,6 +253,7 @@ class Supervisor(object):
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
             # endif self.userInputQueue.empty()
+            #self.printQueue(self.handlerQueue)
             if self.handlerDelayed and self.stableInternet:
                 self.runHandler()
             self.processHandlerMsg()
