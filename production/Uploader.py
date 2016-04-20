@@ -76,22 +76,31 @@ class Uploader(object):
         self.clientAccountInfo = None
         self.setApp(inputKey, inputSecret)
         self.setAccessToken(inputAccessToken)
-        self.setClient()
         
     def run(self):
         print "Hi, I'm an Uploader!"
         print "Uploader, checking in! pid:", os.getpid()
-#         while self.orders.empty(): # wait for an order from Handler to start
-#             time.sleep(1)
-#         # require that Handler tell uploader to QMSG_UPLOAD
-#         handlerMsg = self.orders.get()     
-        status = Utility.readMessageQueue(self.orders)
-        if status == Utility.QMSG_UPLOAD:
-            self.uploadBatch() 
-        self.orders.put(Utility.QMSG_UPLOAD_DONE) # tell Handler we're done
-        print "Uploader is exiting."
-        # Put actual cleanup/saving code here!
-        print "Uploader successfully exited."
+        if self.clientSucess():
+            status = Utility.readMessageQueue(self.orders)
+            if status == Utility.QMSG_UPLOAD:
+                self.uploadBatch() 
+            self.orders.put(Utility.QMSG_UPLOAD_DONE) # tell Handler we're done
+            print "Uploader is exiting."
+            print "Uploader successfully exited."
+        else:
+            status = Utility.readMessageQueue(self.orders)
+            self.orders.put(Utility.QMSG_UPLOAD_NONE)
+            print "12 rare pepes found."
+    
+    def clientSucess(self):
+        theCase = False
+        try:
+            self.setClient()
+            theCase = True
+        except:
+            theCase = False
+        finally:
+            return theCase
     
     def setApp(self, appKey = None, appSecret = None):
         self.myKey = appKey
@@ -119,7 +128,6 @@ class Uploader(object):
     #"quota": 107374182400000, "normal": 680031877871]
     def getClientAccountInfo(self, jsonKey):
         return self.clientAccountInfo[jsonKey]
-    
     
     def dequeue(self):
         requiredItem = None
