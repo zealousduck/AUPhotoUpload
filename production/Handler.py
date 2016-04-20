@@ -15,11 +15,12 @@ import subprocess
 
 class Handler(object):
 
-    def __init__(self, orderQueue):
+    def __init__(self, orderQueue, responseQueue):
         config = Utility.getProjectConfig()
         # Extract relevant config data
         self.directoryName = config.get('directories', 'imagedirectory')
         self.orders = orderQueue
+        self.responseQueue = responseQueue
         self.uploadOrders = Queue()
         self.queue = Queue()
         self.listFileName = Utility.UPLOADS_FILE_NAME
@@ -81,7 +82,7 @@ class Handler(object):
                 self.uploadOrders.put(Utility.QMSG_UPLOAD)
                 uploaderProcess.start()
                 
-                self.orders.put(Utility.QMSG_UPLOAD)
+                self.responseQueue.put(Utility.QMSG_UPLOAD)
                 # then enqueued, wait for uploader to finish
                 uploaderProcess.join()
                 while not self.queue.empty():
@@ -98,7 +99,7 @@ class Handler(object):
                 print 'QMSG_HANDLE_NONE'
                 self.exitMessage = Utility.QMSG_HANDLE_NONE       
         # once uploader done, exit/send a message to supervisor "done" and then exit
-        self.orders.put(self.exitMessage)
+        self.responseQueue.put(self.exitMessage)
     
     def enqueue(self, element=None):
         if element is None:

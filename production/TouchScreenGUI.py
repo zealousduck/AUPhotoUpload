@@ -11,6 +11,7 @@ __WORKFLOW_BUTTON = 4
 __INTERNET_BUTTON = 2
 
 class FrontEnd(object):
+
     statusDict = {  Utility.QMSG_SCAN: ("Scanning and\nDownloading New\nImages\n(This could\ntake a while...)",__WORKFLOW_BUTTON),
                     Utility.QMSG_SCAN_DONE: ("Scan\nComplete.",__WORKFLOW_BUTTON),
                     Utility.QMSG_SCAN_FAIL: ("Scan\nFailed.",__WORKFLOW_BUTTON),
