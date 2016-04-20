@@ -9,6 +9,27 @@ from multiprocessing import Queue
 
 
 class FrontEnd(object):
+    messageDict = { Utility.QMSG_SCAN: "Scanning and\nDownloading New\nImages\n(This could\ntake a while...)",
+                    Utility.QMSG_SCAN_DONE: "Scan\nComplete.",
+                    Utility.QMSG_SCAN_FAIL: "Scan\nFailed.",
+                    Utility.QMSG_UPLOAD: "Uploading\nIn\nProgress...",
+                    Utility.QMSG_UPLOAD_DONE: "Uploading\nComplete.",
+                    Utility.QMSG_HANDLE_NONE: "No new\nimages\nfound.",
+                    Utility.QMSG_IDLE: "Idle",
+                    Utility.QMSG_INTERNET_NO: "No\nInternet\nConnection",
+                    Utility.QMSG_INTERNET_YES: "Internet\nConnection\nAvailable"};
+                    
+    buttonDict = {  Utility.QMSG_SCAN:         4,
+                    Utility.QMSG_SCAN_DONE:    4,
+                    Utility.QMSG_SCAN_FAIL:    4,
+                    Utility.QMSG_UPLOAD:       4,
+                    Utility.QMSG_UPLOAD_DONE:  4,
+                    Utility.QMSG_HANDLE_NONE:  4,
+                    Utility.QMSG_IDLE:         4,
+                    Utility.QMSG_INTERNET_NO:  2,
+                    Utility.QMSG_INTERNET_YES: 2};
+    errorButton = 4
+    errorStatus = "Error:\nUnknown\nStatus."
     
     def __init__(self, taskQueue, statusQueue):
         self.toggle = False     # Variable for constant-upload mode
@@ -57,41 +78,18 @@ class FrontEnd(object):
         return root
     
     def DisplayCurrentStatus(self, pendingStatus):
-        # NEEDS REFACTORING INTO SOME DICTIONARY SHIT
         displayText = ""
         whichButton = 0
-        if(pendingStatus == Utility.QMSG_SCAN):
-            displayText = "Scanning and\nDownloading New\nImages\n(This could\ntake a while...)"
-            whichButton = 4
-        elif(pendingStatus == Utility.QMSG_SCAN_DONE):
-            displayText = "Scan\nComplete."
-            whichButton = 4
+        if pendingStatus in FrontEnd.messageDict:
+            displayText = FrontEnd.messageDict[pendingStatus]
+            whichButton = FrontEnd.buttonDict[pendingStatus]
+        else:
+            displayText = FrontEnd.errorStatus
+            whichButton = FrontEnd.errorButton
+        if(pendingStatus == Utility.QMSG_SCAN_DONE):
             self.button1["text"] = "Start Upload"
         elif(pendingStatus == Utility.QMSG_SCAN_FAIL):
-            displayText = "Scan\nFailed."
-            whichButton = 4
             self.button1["text"] = "Scan\nCamera"
-        elif(pendingStatus == Utility.QMSG_UPLOAD):
-            displayText = "Uploading\nIn\nProgress..."
-            whichButton = 4
-        elif(pendingStatus == Utility.QMSG_UPLOAD_DONE):
-            displayText = "Uploading\nComplete."
-            whichButton = 4
-        elif(pendingStatus == Utility.QMSG_HANDLE_NONE):
-            displayText = "No new\nimages\nfound."
-            whichButton = 4
-        elif(pendingStatus == Utility.QMSG_IDLE):
-            displayText = "Idle"
-            whichButton = 4
-        elif(pendingStatus == Utility.QMSG_INTERNET_NO):
-            displayText = "No\nInternet\nConnection"
-            whichButton = 2
-        elif(pendingStatus == Utility.QMSG_INTERNET_YES):
-            displayText = "Internet\nConnection\nAvailable"
-            whichButton = 2
-        else:
-            displayText = "Error: \nUnknown \nStatus."
-            
         self.currentStatus = pendingStatus
         if whichButton == 4:
             self.button4["text"] = displayText
