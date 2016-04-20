@@ -15,19 +15,19 @@ STABLE_INTERNET_COUNT = 5
 # NEW_PICS_FILE_NAME = '/home/chris/workspace/AUPhotoUpload/production/newPics.txt'
 OLD_PICS_FILE_NAME = '/home/pi/AUPhotoUpload/production/oldPics.txt' #Place holder for the absolute path for the pi.
 NEW_PICS_FILE_NAME = '/home/pi/AUPhotoUpload/production/newPics.txt' #Place holder for the absolute path for the pi.
-QMSG_SETTINGS = 'msg_settings'
-QMSG_START = 'msg_start'
-QMSG_FILE_EXPLORER = 'msg_file_explorer'
-QMSG_SCAN = 'msg_reader_scan'
-QMSG_SCAN_DONE = 'msg_reader_done'
-QMSG_SCAN_FAIL = 'msg_reader_fail'
-QMSG_HANDLE = 'msg_handler_start'
-QMSG_HANDLE_NONE = 'msg_handler_none'
-QMSG_UPLOAD = 'msg_uploader_working'
-QMSG_UPLOAD_DONE = 'msg_uploader_done'
-QMSG_IDLE = 'msg_idle'
-QMSG_INTERNET_NO = 'msg_no_internet'
-QMSG_INTERNET_YES = 'msg_yes_internet'
+QMSG_SETTINGS = 10
+QMSG_FILE_EXPLORER = 20
+QMSG_START = 30
+QMSG_SCAN = 40
+QMSG_SCAN_DONE = 45
+QMSG_SCAN_FAIL = 49
+QMSG_HANDLE = 50
+QMSG_HANDLE_NONE = 59
+QMSG_UPLOAD = 60
+QMSG_UPLOAD_DONE = 69
+QMSG_IDLE = 70
+QMSG_INTERNET_YES = 90
+QMSG_INTERNET_NO = 99
 
 import ConfigParser
 import os
