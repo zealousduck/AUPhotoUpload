@@ -73,7 +73,6 @@ class Handler(object):
                 renamedList.append(self.renameWithTimestamp(element))
             print 'len(listToUpload)', len(listToUpload)
             if len(listToUpload) != 0:
-                self.exitMessage = Utility.QMSG_UPLOAD_DONE
                 f = open(self.listFileName, 'a')
                 for element in renamedList:  
                     self.enqueue(element) # rename and submit the renamed image name
@@ -85,6 +84,7 @@ class Handler(object):
                 self.responseQueue.put(Utility.QMSG_UPLOAD)
                 # then enqueued, wait for uploader to finish
                 uploaderProcess.join()
+                self.exitMessage = self.uploadOrders.get()
                 while not self.queue.empty():
                     renamedList.remove(self.queue.get())
                 for element in renamedList:
