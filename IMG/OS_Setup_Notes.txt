@@ -1,0 +1,35 @@
+List of installed applications for Rasbian fork
+
+Dependencies for AUPhotoUpload App
+1) sudo apt install gphoto2    (Needed to interface with cameras)
+2) sudo apt install python-pip (Needed for installing python dropbox API)
+3) sudo apt install python-tk  (Needed for GUI to work)
+4) sudo pip install dropbox    (Installs dropbox API)
+
+Install Git (Git will be used to have OTA updates for AUPhotoUpload Applications 
+1) sudo apt install git
+To update the AUPhotoUpload app, run this command from master branch
+# cd /home/pi/AUPhotoUpload && git pull 
+# to update the OS, run: 
+    # sudo apt update && sudo apt upgrade
+    # Do not use dist-upgrade as we do  not want to upgrade to newer Distro versions with out a valid reason. It may break our code.
+
+
+Setting up touchscreen
+# Taken from https://learn.adafruit.com/adafruit-pitft-28-inch-resistive-touchscreen-display-raspberry-pi/easy-install
+
+1) Expand Filesystem
+    # sudo raspi-config (Only works with Rasbian's default partitioning scheme)
+    # sudo reboot
+2) Install new kernel 
+    # curl -SLs https://apt.adafruit.com/add-pin | sudo bash
+    # sudo apt update (These first two adds the adafruit driver repo and updates the package manager)
+    # sudo apt-get install raspberrypi-bootloader
+    # sudo apt-get install adafruit-pitft-helper
+3)
+
+Setting up internet with Network-Manager
+
+Setting up our X Window manager
+
+Having AUPhotoUpload launch at boot
