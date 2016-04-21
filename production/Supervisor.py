@@ -190,6 +190,10 @@ class Supervisor(object):
                 self.statusQueue.put(Utility.QMSG_UPLOAD_DONE)
             elif handlerMsg == Utility.QMSG_HANDLE_NONE:
                 self.statusQueue.put(Utility.QMSG_HANDLE_NONE)
+            elif handlerMsg == QMSG_UPLOAD_USER_FAIL:
+                self.statusQueue.put(QMSG_UPLOAD_USER_FAIL)
+            elif handlerMsg == QMSG_UPLOAD_IMAGE_FAIL:
+                self.statusQueue.put(QMSG_UPLOAD_IMAGE_FAIL)
             else:
                 self.statusQueue.put("Unknown Message from handlerQueue")
     
