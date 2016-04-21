@@ -89,7 +89,7 @@ class Uploader(object):
             print "Uploader successfully exited."
         else:
             status = Utility.readMessageQueue(self.orders)
-            self.orders.put(Utility.QMSG_UPLOAD_NONE)
+            self.orders.put(Utility.QMSG_UPLOAD_DONE)
             print "12 rare pepes found."
     
     def clientSucess(self):
