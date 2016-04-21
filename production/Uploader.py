@@ -80,17 +80,23 @@ class Uploader(object):
     def run(self):
         print "Hi, I'm an Uploader!"
         print "Uploader, checking in! pid:", os.getpid()
+        response = 0
+        status = Utility.readMessageQueue(self.orders)
         if self.clientSucess():
-            status = Utility.readMessageQueue(self.orders)
             if status == Utility.QMSG_UPLOAD:
-                self.uploadBatch() 
-            self.orders.put(Utility.QMSG_UPLOAD_DONE) # tell Handler we're done
-            print "Uploader is exiting."
-            print "Uploader successfully exited."
+                self.uploadBatch()
+            time.sleep(1)
+            if self.queue.empty():
+                response = Utility.QMSG_UPLOAD_DONE
+            else:
+                response = QMSG_UPLOAD_IMAGE_FAIL
+            
         else:
-            status = Utility.readMessageQueue(self.orders)
-            self.orders.put(Utility.QMSG_UPLOAD_DONE)
+            response = QMSG_UPLOAD_USER_FAIL
             print "12 rare pepes found."
+        # tell Handler we're done
+        self.orders.put(response)
+        print "Uploader is exiting."
     
     def clientSucess(self):
         theCase = False
