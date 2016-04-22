@@ -7,22 +7,21 @@ import os
 import PhotoUploadUtility as Utility
 from multiprocessing import Queue
 
-__WORKFLOW_BUTTON = 4
-__INTERNET_BUTTON = 2
 
 class FrontEnd(object):
 
-    statusDict = {  Utility.QMSG_SCAN: ("Scanning and\nDownloading New\nImages\n(This could\ntake a while...)",__WORKFLOW_BUTTON),
-                    Utility.QMSG_SCAN_DONE: ("Scan\nComplete.",__WORKFLOW_BUTTON),
-                    Utility.QMSG_SCAN_FAIL: ("Scan\nFailed.",__WORKFLOW_BUTTON),
-                    Utility.QMSG_UPLOAD: ("Uploading\nIn\nProgress...",__WORKFLOW_BUTTON),
-                    Utility.QMSG_UPLOAD_DONE: ("Uploading\nComplete.",__WORKFLOW_BUTTON),
-                    Utility.QMSG_UPLOAD_USER_FAIL: ("Upload\nFailed:\nCan't\nReach\nDropbox",__WORKFLOW_BUTTON),
-                    Utility.QMSG_UPLOAD_IMAGE_FAIL: ("Uploading\nComplete*\nSome Images\nFailed.",__WORKFLOW_BUTTON),
-                    Utility.QMSG_HANDLE_NONE: ("No new\nimages\nfound.",__WORKFLOW_BUTTON),
-                    Utility.QMSG_IDLE: ("Idle",__WORKFLOW_BUTTON),
-                    Utility.QMSG_INTERNET_NO: ("No\nInternet\nConnection",__INTERNET_BUTTON),
-                    Utility.QMSG_INTERNET_YES: ("Internet\nConnection\nAvailable",__INTERNET_BUTTON)};
+
+    statusDict = {  Utility.QMSG_SCAN: ("Scanning and\nDownloading New\nImages\n(This could\ntake a while...)",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_SCAN_DONE: ("Scan\nComplete.",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_SCAN_FAIL: ("Scan\nFailed.",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD: ("Uploading\nIn\nProgress...",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD_DONE: ("Uploading\nComplete.",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD_USER_FAIL: ("Upload\nFailed:\nCan't\nReach\nDropbox",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD_IMAGE_FAIL: ("Uploading\nComplete*\nSome Images\nFailed.",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_HANDLE_NONE: ("No new\nimages\nfound.",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_IDLE: ("Idle",FrontEnd.__WORKFLOW_BUTTON),
+                    Utility.QMSG_INTERNET_NO: ("No\nInternet\nConnection",FrontEnd.__INTERNET_BUTTON),
+                    Utility.QMSG_INTERNET_YES: ("Internet\nConnection\nAvailable",FrontEnd.__INTERNET_BUTTON)};
                     
 #     buttonDict = {  Utility.QMSG_SCAN:         4,
 #                     Utility.QMSG_SCAN_DONE:    4,
@@ -34,10 +33,12 @@ class FrontEnd(object):
 #                     Utility.QMSG_INTERNET_NO:  2,
 #                     Utility.QMSG_INTERNET_YES: 2};
 
-    errorButton = __WORKFLOW_BUTTON
-    errorStatus = "Error:\nUnknown\nStatus."
     
     def __init__(self, taskQueue, statusQueue):
+        self.__INTERNET_BUTTON = 2
+        self.__WORKFLOW_BUTTON = 4
+        self.errorButton = self.__WORKFLOW_BUTTON
+        self.errorStatus = "Error:\nUnknown\nStatus."
         self.toggle = False     # Variable for constant-upload mode
         self.queue = taskQueue
         self.statusQueue = statusQueue
@@ -52,16 +53,16 @@ class FrontEnd(object):
             displayText, whichButton = FrontEnd.statusDict[pendingStatus]
             #whichButton = FrontEnd.buttonDict[pendingStatus]
         else:
-            displayText = FrontEnd.errorStatus
-            whichButton = FrontEnd.errorButton
+            displayText = FrontEnd.self.errorStatus
+            whichButton = FrontEnd.self.errorButton
         if(pendingStatus == Utility.QMSG_SCAN_DONE):
             self.button1["text"] = "Start Upload"
         elif(pendingStatus == Utility.QMSG_SCAN_FAIL):
             self.button1["text"] = "Scan\nCamera"
         self.currentStatus = pendingStatus
-        if whichButton == __WORKFLOW_BUTTON:
+        if whichButton == self.__WORKFLOW_BUTTON:
             self.button4["text"] = displayText
-        elif whichButton == __INTERNET_BUTTON:
+        elif whichButton == self.__INTERNET_BUTTON:
             self.button2["text"] = displayText
     
     def StartUpload(self, event):
