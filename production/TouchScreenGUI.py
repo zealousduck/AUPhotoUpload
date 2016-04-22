@@ -19,7 +19,7 @@ class FrontEnd(object):
                     Utility.QMSG_UPLOAD: ("Upload\nin\nProgress",__WORKFLOW_BUTTON),
                     Utility.QMSG_UPLOAD_DONE: ("Upload\nComplete",__WORKFLOW_BUTTON),
                     Utility.QMSG_UPLOAD_USER_FAIL: ("Upload\nFailed:\nCan't\nReach\nDropbox",__WORKFLOW_BUTTON),
-                    Utility.QMSG_UPLOAD_IMAGE_FAIL: ("Uploading\nComplete*\nSome Images\nFailed",__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD_IMAGE_FAIL: ("Upload\nComplete*\nSome Images\nFailed",__WORKFLOW_BUTTON),
                     Utility.QMSG_HANDLE_NONE: ("No New\nImages\nFound",__WORKFLOW_BUTTON),
                     Utility.QMSG_IDLE: ("Idle",__WORKFLOW_BUTTON),
                     Utility.QMSG_INTERNET_NO: ("Internet\nNot\nConnected",__INTERNET_BUTTON),
