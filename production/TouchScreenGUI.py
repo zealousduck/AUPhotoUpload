@@ -57,14 +57,14 @@ class FrontEnd(object):
             displayText = FrontEnd.errorStatus
             whichButton = FrontEnd.errorButton
         if(pendingStatus == Utility.QMSG_SCAN_DONE):
-            self.button1["text"] = "Start Upload"
+            self.startButton["text"] = "Start\nUpload"
         elif(pendingStatus == Utility.QMSG_SCAN_FAIL):
-            self.button1["text"] = "Scan\nCamera"
+            self.startButton["text"] = "Scan\nCamera"
         self.currentStatus = pendingStatus
         if whichButton == 4:
-            self.button4["text"] = displayText
+            self.statusLabel["text"] = displayText
         elif whichButton == 2:
-            self.button2["text"] = displayText
+            self.internetLabel["text"] = displayText
     
     def StartUpload(self, event):
         self.queue.put(Utility.QMSG_START)
@@ -99,25 +99,25 @@ class FrontEnd(object):
         topFrame = Frame(root)
         topFrame.pack()
         #information for Upload Photos (continuous)
-        self.button1 = Button(topFrame, text="Start Upload", width=9, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.button1.bind("<Button-1>", self.StartUpload)
+        self.startButton = Button(topFrame, text="Start\nUpload", width=8, height=12, bg="orange", fg="white", font = "Verdana 12")
+        self.startButton.bind("<Button-1>", self.StartUpload)
         
         #information for button2
-        self.button2 = Button(topFrame, text="Internet\nConnection?", width=6, height=6, bg="orange", fg="white", font = "Verdana 12")
+        self.internetLabel = Label(topFrame, text="Internet\nConnection?", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
         #self.button2 = Button(topFrame, text="File Explorer", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
         #self.button2.bind("<Button-1>", self.FileExplorer)
         
         #information for button3
-        self.button3 = Button(topFrame, text="Restart", width=9, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.button3.bind("<Button-1>", self.Settings)
+        self.resetButtion = Button(topFrame, text="Restart", width=8, height=12, bg="orange", fg="white", font = "Verdana 12")
+        self.resetButtion.bind("<Button-1>", self.Settings)
         
-        self.button4 = Button(topFrame, text=self.currentStatus, width=6, height=6, bg="orange", fg="white", font = "Verdana 12")
+        self.statusLabel = Label(topFrame, text=self.currentStatus, width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
     
         #pack all information for the buttons 
-        self.button1.pack(side=LEFT, anchor=W)
-        self.button3.pack(side=RIGHT, anchor=E)
-        self.button2.pack(side=TOP, anchor=NW)
-        self.button4.pack(side=BOTTOM, anchor=SW)
+        self.startButton.pack(side=LEFT, anchor=W)
+        self.resetButtion.pack(side=RIGHT, anchor=E)
+        self.internetLabel.pack(side=TOP, anchor=NW)
+        self.statusLabel.pack(side=BOTTOM, anchor=SW)
         return root
 
     def run(self):
