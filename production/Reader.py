@@ -68,7 +68,7 @@ def __getImageNumber(line=None):
         return None
 
 def downloadNewImages(fileNameOld=None,fileNameNew=None):
-    flags = os.O_CREAT | os.O_EXCL
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
     if fileNameOld is None or fileNameNew is None:
         raise Exception('downloadNewImages:  missing file name parameter')
     # Pythonic diff logic
