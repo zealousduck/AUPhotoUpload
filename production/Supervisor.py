@@ -28,6 +28,7 @@ class Supervisor(object):
         self.stableInternet = False
         self.handlerDelayed = False
         self.stableInternetCounter = 0
+        self.inactivityCounter = 0
     
     '''
     startGUI() initializes and runs the GUI. It is started once and only
@@ -119,6 +120,13 @@ class Supervisor(object):
         for time-outs and instead allows some rubber-banding of connectivity.
     '''
     def updateInternet(self):
+        # only open sockets if app is active. if inactive, cut down frequency based on counter value
+        if ((self.inactivityCounter >= Utility.INACTIVE_COUNT) and (self.inactivityCounter % 4 != 0)):
+            #print 'updateInternet() not check'
+            return
+        elif (self.inactivityCounter % 2 != 0): # halving frequency of sockets
+            return
+        #print 'updateInternet() check'
         if Utility.checkInternetConnection():
             if (self.stableInternetCounter < Utility.STABLE_INTERNET_COUNT):
                 self.stableInternetCounter += 1
@@ -242,9 +250,13 @@ class Supervisor(object):
         self.tryScan()
         time.sleep(Utility.POLL_TIME)
         while True:
-            if not self.userInputQueue.empty():
-                
-                #self.printQueue(self.handlerQueue)
+            if (self.userInputQueue.empty()):
+                self.inactivityCounter += 1 # put device to low-activity mode
+                #print 'inactivityCounter:', self.inactivityCounter, '\tINACTIVE_COUNT:', Utility.INACTIVE_COUNT
+                if (self.inactivityCounter >= Utility.INACTIVE_COUNT):
+                    time.sleep(3*Utility.POLL_TIME)
+            else:   #if not self.userInputQueue.empty():
+                self.inactivityCounter = 0    
                 job = self.userInputQueue.get()
                 if (job == Utility.QMSG_START and self.didScanFail):
                     print 'tryScan()'
@@ -257,8 +269,7 @@ class Supervisor(object):
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
             # endif self.userInputQueue.empty()
-            #self.printQueue(self.handlerQueue)
-            if self.handlerDelayed and self.stableInternet:
+            if (self.handlerDelayed and self.stableInternet):
                 self.handlerDelayed = False
                 self.runHandler()
             self.processHandlerMsg()
