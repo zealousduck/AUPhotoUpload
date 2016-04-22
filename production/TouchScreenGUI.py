@@ -103,7 +103,7 @@ class FrontEnd(object):
         self.startButton.bind("<Button-1>", self.StartUpload)
         
         #information for button2
-        self.internetLabel = Label(topFrame, text="Internet\nConnection?", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
+        self.internetLabel = Label(topFrame, text="Checking\nFor\nInternet", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
         #self.button2 = Button(topFrame, text="File Explorer", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
         #self.button2.bind("<Button-1>", self.FileExplorer)
         
