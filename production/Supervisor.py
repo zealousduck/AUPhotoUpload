@@ -271,8 +271,10 @@ class Supervisor(object):
             if (self.userInputQueue.empty()):
                 self.updateInactivity()
             else:   #if not self.userInputQueue.empty():
-                self.clearInactivity()    
                 job = self.userInputQueue.get()
+                if(self.inactivityCounter < 5):
+                    continue    #Prevents spamming of buttons
+                self.clearInactivity()
                 if (job == Utility.QMSG_START and self.didScanFail):
                     print 'tryScan()'
                     self.tryScan()
