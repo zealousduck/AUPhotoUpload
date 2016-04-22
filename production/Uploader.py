@@ -89,11 +89,11 @@ class Uploader(object):
             if self.queue.empty():
                 response = Utility.QMSG_UPLOAD_DONE
             else:
-                response = QMSG_UPLOAD_IMAGE_FAIL
+                response = Utility.QMSG_UPLOAD_IMAGE_FAIL
             
         else:
-            response = QMSG_UPLOAD_USER_FAIL
-            print "12 rare pepes found."
+            response = Utility.QMSG_UPLOAD_USER_FAIL
+            #print "12 rare pepes found."
         # tell Handler we're done
         self.orders.put(response)
         print "Uploader is exiting."
