@@ -28,6 +28,7 @@ class Supervisor(object):
         self.stableInternet = False
         self.handlerDelayed = False
         self.stableInternetCounter = 0
+        self.inactivityCounter = 0
     
     '''
     startGUI() initializes and runs the GUI. It is started once and only
@@ -119,6 +120,13 @@ class Supervisor(object):
         for time-outs and instead allows some rubber-banding of connectivity.
     '''
     def updateInternet(self):
+        # only open sockets if app is active. if inactive, cut down frequency based on counter value
+        if ((self.inactivityCounter >= Utility.INACTIVE_COUNT) and (self.inactivityCounter % 4 != 0)):
+            #print 'updateInternet() not check'
+            return
+        elif (self.inactivityCounter % 2 != 0): # halving frequency of sockets
+            return
+        #print 'updateInternet() check'
         if Utility.checkInternetConnection():
             if (self.stableInternetCounter < Utility.STABLE_INTERNET_COUNT):
                 self.stableInternetCounter += 1
@@ -202,19 +210,6 @@ class Supervisor(object):
         pull images from the camera and upload them. It makes sure to only
         activate Handler if the scan is successful.
     '''
-    def printQueue(self, toPrintQueue):
-        print "Printing Queue"
-        time.sleep(1)
-        sizeyQueue = Queue()
-        sizey =  toPrintQueue.qsize()
-        for i in range(0, sizey):
-            watDaFug = toPrintQueue.get()
-            print watDaFug
-            sizeyQueue.put(watDaFug)
-        for i in range(0, sizey):
-            toPrintQueue.put(sizeyQueue.get())
-        time.sleep(1)
-    
     def startUploadJob(self):
         self.runReader()
         if not self.isScanMessageFail(): 
@@ -228,7 +223,38 @@ class Supervisor(object):
                 print 'handler not run!'
                 time.sleep(Utility.POLL_TIME)
                 self.handlerDelayed = True
+                
+    def printQueue(self, toPrintQueue):
+        print "Printing Queue"
+        time.sleep(1)
+        sizeyQueue = Queue()
+        sizey =  toPrintQueue.qsize()
+        for i in range(0, sizey):
+            watDaFug = toPrintQueue.get()
+            print watDaFug
+            sizeyQueue.put(watDaFug)
+        for i in range(0, sizey):
+            toPrintQueue.put(sizeyQueue.get())
+        time.sleep(1)
     
+    '''
+    updateInactivity() handles the inactivity counter for when Supervisor receives
+        no commands from the GUI. 
+    '''
+    def updateInactivity(self):
+        if (self.inactivityCounter > 120):  # approximately 300 seconds?
+            self.inactivityCounter = 127    # undo counter updates, prevent sockets (127 is prime)
+            time.sleep(7 * Utility.POLL_TIME)
+        else:
+            self.inactivityCounter += 1 # put device to low-activity mode
+        #print 'inactivityCounter:', self.inactivityCounter, '\tINACTIVE_COUNT:', Utility.INACTIVE_COUNT
+        if (self.inactivityCounter >= Utility.INACTIVE_COUNT):
+            self.statusQueue.put(Utility.QMSG_SLEEP)
+            time.sleep(3 * Utility.POLL_TIME)
+
+    def clearInactivity(self):
+        self.inactivityCounter = 0
+        
     '''
     run() is the entry-point and main loop for the PhotoUpload program.
         run() is where the Supervisor coordinates the various children and workflow
@@ -242,10 +268,13 @@ class Supervisor(object):
         self.tryScan()
         time.sleep(Utility.POLL_TIME)
         while True:
-            if not self.userInputQueue.empty():
-                
-                #self.printQueue(self.handlerQueue)
+            if (self.userInputQueue.empty()):
+                self.updateInactivity()
+            else:   #if not self.userInputQueue.empty():
                 job = self.userInputQueue.get()
+                if(self.inactivityCounter < 5):
+                    continue    #Prevents spamming of buttons
+                self.clearInactivity()
                 if (job == Utility.QMSG_START and self.didScanFail):
                     print 'tryScan()'
                     self.tryScan()
@@ -257,14 +286,16 @@ class Supervisor(object):
                 else:
                     raise Exception('Supervisor.run:  unexpected object in queue')
             # endif self.userInputQueue.empty()
-            #self.printQueue(self.handlerQueue)
-            if self.handlerDelayed and self.stableInternet:
+            if (self.handlerDelayed and self.stableInternet):
                 self.handlerDelayed = False
                 self.runHandler()
             #self.processHandlerMsg()
             self.updateInternet()
             time.sleep(Utility.POLL_TIME)
         # end while loop
+
+
+
     
 if __name__ == '__main__':
     if not os.path.isfile(Utility.CONFIG_FILE_NAME):

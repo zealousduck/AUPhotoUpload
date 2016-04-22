@@ -11,6 +11,7 @@ UPLOADS_FILE_NAME = 'imageList.txt'
 DEFAULT_CONFIG = 'photoUploadDefaults.cfg'
 POLL_TIME = 1   # in seconds
 STABLE_INTERNET_COUNT = 5
+INACTIVE_COUNT = 30
 # OLD_PICS_FILE_NAME = '/home/chris/workspace/AUPhotoUpload/production/oldPics.txt'
 # NEW_PICS_FILE_NAME = '/home/chris/workspace/AUPhotoUpload/production/newPics.txt'
 OLD_PICS_FILE_NAME = '/home/pi/AUPhotoUpload/production/oldPics.txt' #Place holder for the absolute path for the pi.
@@ -28,6 +29,7 @@ QMSG_UPLOAD_USER_FAIL = 64
 QMSG_UPLOAD_IMAGE_FAIL = 65
 QMSG_UPLOAD_DONE = 69
 QMSG_IDLE = 70
+QMSG_SLEEP = 75
 QMSG_INTERNET_YES = 90
 QMSG_INTERNET_NO = 99
 
