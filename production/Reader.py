@@ -68,15 +68,16 @@ def __getImageNumber(line=None):
         return None
 
 def downloadNewImages(fileNameOld=None,fileNameNew=None):
+    flags = os.O_CREAT | os.O_EXCL
     if fileNameOld is None or fileNameNew is None:
         raise Exception('downloadNewImages:  missing file name parameter')
     # Pythonic diff logic
-    f = open(fileNameOld, 'r+')
+    f = os.open(fileNameOld, flags)
     oldImageSet = set()
     for line in f:
         oldImageSet.add(line)
     f.close()
-    f = open(fileNameNew, 'r+')
+    f = os.open(fileNameNew, flags)
     newImageSet = set()
     for line in f:
         newImageSet.add(line)
