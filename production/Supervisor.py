@@ -261,7 +261,7 @@ class Supervisor(object):
             if self.handlerDelayed and self.stableInternet:
                 self.handlerDelayed = False
                 self.runHandler()
-            self.processHandlerMsg()
+            #self.processHandlerMsg()
             self.updateInternet()
             time.sleep(Utility.POLL_TIME)
         # end while loop

@@ -13,15 +13,17 @@ class FrontEnd(object):
     __WORKFLOW_BUTTON = 4
     __INTERNET_BUTTON = 2
 
-    statusDict = {  Utility.QMSG_SCAN: ("Scanning and\nDownloading New\nImages\n(This could\ntake a while...)",__WORKFLOW_BUTTON),
-                    Utility.QMSG_SCAN_DONE: ("Scan\nComplete.",__WORKFLOW_BUTTON),
-                    Utility.QMSG_SCAN_FAIL: ("Scan\nFailed.",__WORKFLOW_BUTTON),
-                    Utility.QMSG_UPLOAD: ("Uploading\nIn\nProgress...",__WORKFLOW_BUTTON),
-                    Utility.QMSG_UPLOAD_DONE: ("Uploading\nComplete.",__WORKFLOW_BUTTON),
-                    Utility.QMSG_HANDLE_NONE: ("No new\nimages\nfound.",__WORKFLOW_BUTTON),
+    statusDict = {  Utility.QMSG_SCAN: ("Scanning\nand\nGetting\nNew\nImages",__WORKFLOW_BUTTON),
+                    Utility.QMSG_SCAN_DONE: ("Scan\nComplete",__WORKFLOW_BUTTON),
+                    Utility.QMSG_SCAN_FAIL: ("Scan\nFailed",__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD: ("Upload\nin\nProgress",__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD_DONE: ("Upload\nComplete",__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD_USER_FAIL: ("Upload\nFailed:\nCan't\nReach\nDropbox",__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD_IMAGE_FAIL: ("Upload\nComplete*\nSome Images\nFailed",__WORKFLOW_BUTTON),
+                    Utility.QMSG_HANDLE_NONE: ("No New\nImages\nFound",__WORKFLOW_BUTTON),
                     Utility.QMSG_IDLE: ("Idle",__WORKFLOW_BUTTON),
-                    Utility.QMSG_INTERNET_NO: ("No\nInternet\nConnection",__INTERNET_BUTTON),
-                    Utility.QMSG_INTERNET_YES: ("Internet\nConnection\nAvailable",__INTERNET_BUTTON)};
+                    Utility.QMSG_INTERNET_NO: ("Internet\nNot\nConnected",__INTERNET_BUTTON),
+                    Utility.QMSG_INTERNET_YES: ("Internet\nConnected",__INTERNET_BUTTON)};
                     
 #     buttonDict = {  Utility.QMSG_SCAN:         4,
 #                     Utility.QMSG_SCAN_DONE:    4,
@@ -51,6 +53,7 @@ class FrontEnd(object):
             displayText, whichButton = FrontEnd.statusDict[pendingStatus]
             #whichButton = FrontEnd.buttonDict[pendingStatus]
         else:
+            print 'not in dict:', pendingStatus
             displayText = FrontEnd.errorStatus
             whichButton = FrontEnd.errorButton
         if(pendingStatus == Utility.QMSG_SCAN_DONE):
@@ -111,10 +114,10 @@ class FrontEnd(object):
         self.button4 = Button(topFrame, text=self.currentStatus, width=6, height=6, bg="orange", fg="white", font = "Verdana 12")
     
         #pack all information for the buttons 
-        self.button1.pack(side=LEFT, anchor=W, fill=Y)
-        self.button3.pack(side=RIGHT, anchor=E, fill=Y)
-        self.button2.pack(side=TOP, anchor=NW, fill=Y)
-        self.button4.pack(side=BOTTOM, anchor=SW, fill=Y)
+        self.button1.pack(side=LEFT, anchor=W)
+        self.button3.pack(side=RIGHT, anchor=E)
+        self.button2.pack(side=TOP, anchor=NW)
+        self.button4.pack(side=BOTTOM, anchor=SW)
         return root
 
     def run(self):
