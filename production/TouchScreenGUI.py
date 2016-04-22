@@ -121,4 +121,5 @@ class FrontEnd(object):
     def Settings(self, event):
         print("Test for script to settings")
         self.queue.put(Utility.QMSG_SETTINGS)
+        os.system("killall python")
         
