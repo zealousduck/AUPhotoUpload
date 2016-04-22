@@ -58,8 +58,10 @@ class FrontEnd(object):
             whichButton = FrontEnd.errorButton
         if(pendingStatus == Utility.QMSG_SCAN_DONE):
             self.startButton["text"] = "Start\nUpload"
+            self.startButton.configure(command=StartUpload)
         elif(pendingStatus == Utility.QMSG_SCAN_FAIL):
             self.startButton["text"] = "Scan\nCamera"
+            self.startButton.configure(command=StartUpload)
         self.currentStatus = pendingStatus
         if whichButton == 4:
             self.statusLabel["text"] = displayText
@@ -68,6 +70,10 @@ class FrontEnd(object):
     
     def StartUpload(self, event):
         self.queue.put(Utility.QMSG_START)
+        self.startButton.configure(command=disabledUpload)
+        
+     def disabledUpload(self, event):
+        pass
         
     def getMsgTask(self):
         statusMessage = ""
