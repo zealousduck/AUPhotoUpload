@@ -69,14 +69,6 @@ class FrontEnd(object):
     
     def StartUpload(self, event):
         self.queue.put(Utility.QMSG_START)
-        self.startButton.configure(command=self.disabledUpload)
-        self.root.after(Utility.POLL_TIME*5000, self.reenableUpload)
-        
-    def disabledUpload(self, event):
-        pass
-    
-    def reenableUpload(self, event):
-        self.startButton.configure(command=self.StartUpload)
         
     def getMsgTask(self):
         statusMessage = ""
