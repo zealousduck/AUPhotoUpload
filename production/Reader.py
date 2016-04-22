@@ -10,6 +10,7 @@ import os
 from shutil import copyfile
 import subprocess
 import re   # regex library
+import errno
 from Queue import Queue
 
 class Reader(object):
@@ -68,16 +69,23 @@ def __getImageNumber(line=None):
         return None
 
 def downloadNewImages(fileNameOld=None,fileNameNew=None):
-    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
     if fileNameOld is None or fileNameNew is None:
         raise Exception('downloadNewImages:  missing file name parameter')
     # Pythonic diff logic
-    f = os.open(fileNameOld, flags)
     oldImageSet = set()
+    if not os.path.isfile(fileNameOld):
+        f = open(fileNameOld, 'w+')
+        f.close()
+    f = open(fileNameOld, 'r+')
     for line in f:
         oldImageSet.add(line)
     f.close()
-    f = os.open(fileNameNew, flags)
+    
+    
+    if not os.path.isfile(fileNameOld):
+         f = open(fileNameNew, 'w+')
+         f.close()
+    f = open(fileNameNew, 'r+')
     newImageSet = set()
     for line in f:
         newImageSet.add(line)
