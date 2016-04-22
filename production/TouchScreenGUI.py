@@ -16,7 +16,7 @@ class FrontEnd(object):
     statusDict = {  Utility.QMSG_SCAN: ("Scanning\nand\nGetting\nNew\nImages",__WORKFLOW_BUTTON),
                     Utility.QMSG_SCAN_DONE: ("Scan\nComplete",__WORKFLOW_BUTTON),
                     Utility.QMSG_SCAN_FAIL: ("Scan\nFailed",__WORKFLOW_BUTTON),
-                    Utility.QMSG_UPLOAD: ("Upload\nin\nProgress...",__WORKFLOW_BUTTON),
+                    Utility.QMSG_UPLOAD: ("Upload\nin\nProgress",__WORKFLOW_BUTTON),
                     Utility.QMSG_UPLOAD_DONE: ("Upload\nComplete",__WORKFLOW_BUTTON),
                     Utility.QMSG_HANDLE_NONE: ("No New\nImages\nFound",__WORKFLOW_BUTTON),
                     Utility.QMSG_IDLE: ("Idle",__WORKFLOW_BUTTON),
