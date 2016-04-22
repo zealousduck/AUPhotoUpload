@@ -41,11 +41,13 @@ class Reader(object):
         print "Reader successfully exited."
     
 def camera_filenames_to_file(outputFileName=None):
+    print "Filenames to file"
     if outputFileName is None:
         raise Exception('camera_filenames_to_file:  missing file name parameter')
-    copyfile(Utility.OLD_PICS_FILE_NAME, (Utility.OLD_PICS_FILE_NAME + ".bak"))
     if not os.path.isfile(outputFileName):
-        open(outputFileName, 'w+')
+        open(outputFileName, 'w+').close()
+    copyfile(Utility.OLD_PICS_FILE_NAME, (Utility.OLD_PICS_FILE_NAME + ".bak"))
+    
     with open(outputFileName, 'w+') as outFile:
         try:
             #outputFileArg = '>' + outputFileName
@@ -69,6 +71,7 @@ def __getImageNumber(line=None):
         return None
 
 def downloadNewImages(fileNameOld=None,fileNameNew=None):
+    print "download New Images"
     if fileNameOld is None or fileNameNew is None:
         raise Exception('downloadNewImages:  missing file name parameter')
     # Pythonic diff logic
