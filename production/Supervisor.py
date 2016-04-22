@@ -221,6 +221,7 @@ class Supervisor(object):
                 self.handlerDelayed = False
             else:
                 print 'handler not run!'
+                self.statusQueue.put(Utility.QMSG_DELAYED);
                 time.sleep(Utility.POLL_TIME)
                 self.handlerDelayed = True
                 
