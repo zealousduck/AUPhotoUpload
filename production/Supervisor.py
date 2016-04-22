@@ -261,7 +261,7 @@ class Supervisor(object):
         i = str(datetime.datetime.now())
         # Convert '2016-02-08 11:16:04.123456 format to nicer filename
         timeStamp = i[0:10] + '-' + i[11:13] + '-' + i[14:16] + '-' + i[17:19]
-        print timeStamp
+        print 'TIME:', timeStamp
         
     '''
     run() is the entry-point and main loop for the PhotoUpload program.
