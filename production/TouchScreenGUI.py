@@ -53,6 +53,7 @@ class FrontEnd(object):
             displayText, whichButton = FrontEnd.statusDict[pendingStatus]
             #whichButton = FrontEnd.buttonDict[pendingStatus]
         else:
+            print pendingStatus
             displayText = FrontEnd.errorStatus
             whichButton = FrontEnd.errorButton
         if(pendingStatus == Utility.QMSG_SCAN_DONE):
