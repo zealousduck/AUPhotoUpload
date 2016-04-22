@@ -111,7 +111,7 @@ class FrontEnd(object):
         self.resetButtion = Button(topFrame, text="Restart", width=8, height=12, bg="orange", fg="white", font = "Verdana 12")
         self.resetButtion.bind("<Button-1>", self.Settings)
         
-        self.statusLabel = Label(topFrame, text=self.currentStatus, width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
+        self.statusLabel = Label(topFrame, text="Starting\nUp", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
     
         #pack all information for the buttons 
         self.startButton.pack(side=LEFT, anchor=W)
