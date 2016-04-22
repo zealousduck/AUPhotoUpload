@@ -48,7 +48,7 @@ class FrontEnd(object):
         self.root = self.TkSetup()   
     
     
-    def DisplayCurrentStatus(self, pendingStatus):
+    def displayCurrentStatus(self, pendingStatus):
         displayText = ""
         whichButton = 0
         if pendingStatus in FrontEnd.statusDict:
@@ -68,23 +68,23 @@ class FrontEnd(object):
         elif whichButton == 2:
             self.internetLabel["text"] = displayText
     
-    def StartUpload(self, event):
+    def startUpload(self, event):
         self.queue.put(Utility.QMSG_START)
         
     def getMsgTask(self):
         statusMessage = ""
         if not (self.statusQueue.empty()):
             statusMessage = self.statusQueue.get() 
-            self.DisplayCurrentStatus(statusMessage)
+            self.displayCurrentStatus(statusMessage)
  
         self.root.after(Utility.POLL_TIME*1000, self.getMsgTask) # scheduled in ms
     
-    def FileExplorer(self, event):
+    def fileExplorer(self, event):
         print("Test for script to file explorer")
         self.queue.put(Utility.QMSG_FILE_EXPLORER)
     
-    def Settings(self, event):
-        print("Test for script to settings")
+    def resetFunc(self, event):
+        print("Test for script to reset")
         self.queue.put(Utility.QMSG_SETTINGS)
         os.system("killall python")     
     
@@ -102,7 +102,7 @@ class FrontEnd(object):
         topFrame.pack()
         #information for Upload Photos (continuous)
         self.startButton = Button(topFrame, text="Start\nUpload", width=8, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.startButton.bind("<Button-1>", self.StartUpload)
+        self.startButton.bind("<Button-1>", self.startUpload)
         
         #information for button2
         self.internetLabel = Label(topFrame, text="Checking\nFor\nInternet", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
@@ -111,7 +111,7 @@ class FrontEnd(object):
         
         #information for button3
         self.resetButtion = Button(topFrame, text="Restart", width=8, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.resetButtion.bind("<Button-1>", self.Settings)
+        self.resetButtion.bind("<Button-1>", self.resetFunc)
         
         self.statusLabel = Label(topFrame, text="Starting\nUp", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
     
