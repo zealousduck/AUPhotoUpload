@@ -7,6 +7,7 @@ Reader.py class interacts directly with the camera through gphoto2. New
 import PhotoUploadUtility as Utility
 import time
 import os
+from shutil import copyfile
 import subprocess
 import re   # regex library
 from Queue import Queue
@@ -41,14 +42,18 @@ class Reader(object):
 def camera_filenames_to_file(outputFileName=None):
     if outputFileName is None:
         raise Exception('camera_filenames_to_file:  missing file name parameter')
+    copyfile(Utility.OLD_PICS_FILE_NAME, (Utility.OLD_PICS_FILE_NAME + ".bak"))
     if not os.path.isfile(outputFileName):
         open(outputFileName, 'w+')
     with open(outputFileName, 'w+') as outFile:
         try:
             #outputFileArg = '>' + outputFileName
             subprocess.check_call(['gphoto2', '-L'], stdout=outFile) #shell=False
+            os.remove(Utility.OLD_PICS_FILE_NAME + ".bak") # remove the backup file after try
         except subprocess.CalledProcessError:
             print 'Camera is either not connected or not supported' #There is no error in this case. We get the proper outputfile
+            copyfile((Utility.OLD_PICS_FILE_NAME + ".bak"), Utility.OLD_PICS_FILE_NAME)
+            os.remove(Utility.OLD_PICS_FILE_NAME + ".bak") # remove the backup file after try
             raise Exception('Failed to pull image list from camera')
         outFile.close()
         

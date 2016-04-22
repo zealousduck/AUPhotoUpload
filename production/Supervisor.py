@@ -278,7 +278,8 @@ class Supervisor(object):
                 self.clearInactivity()
                 if (job == Utility.QMSG_START and self.didScanFail):
                     print 'tryScan()'
-                    self.tryScan()
+                    #self.tryScan()
+                    self.startUploadJob()
                 elif (job == Utility.QMSG_START and not self.didScanFail):
                     print 'startUploadJob()'
                     self.startUploadJob()
