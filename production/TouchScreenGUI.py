@@ -72,7 +72,7 @@ class FrontEnd(object):
         self.queue.put(Utility.QMSG_START)
         self.startButton.configure(command=disabledUpload)
         
-     def disabledUpload(self, event):
+    def disabledUpload(self, event):
         pass
         
     def getMsgTask(self):
