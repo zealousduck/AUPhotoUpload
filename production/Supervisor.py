@@ -12,6 +12,7 @@ import Configurer
 import os
 import errno
 import time
+import datetime
 import TouchScreenGUI as tsgui
 from multiprocessing import Process, Queue
 
@@ -256,6 +257,12 @@ class Supervisor(object):
     def clearInactivity(self):
         self.inactivityCounter = 0
         
+    def printTimestamp(self):
+        i = str(datetime.datetime.now())
+        # Convert '2016-02-08 11:16:04.123456 format to nicer filename
+        timeStamp = i[0:10] + '-' + i[11:13] + '-' + i[14:16] + '-' + i[17:19]
+        print timeStamp
+        
     '''
     run() is the entry-point and main loop for the PhotoUpload program.
         run() is where the Supervisor coordinates the various children and workflow
@@ -294,11 +301,9 @@ class Supervisor(object):
             #self.processHandlerMsg()
             self.updateInternet()
             time.sleep(Utility.POLL_TIME)
+            self.printTimestamp()
         # end while loop
 
-
-
-    
 if __name__ == '__main__':
     if not os.path.isfile(Utility.CONFIG_FILE_NAME):
         Configurer.Configurer().revertToDefaults()
