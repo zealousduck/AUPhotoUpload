@@ -244,6 +244,7 @@ class Supervisor(object):
     def updateInactivity(self):
         if (self.inactivityCounter > 120):  # approximately 300 seconds?
             self.inactivityCounter = 127    # undo counter updates, prevent sockets (127 is prime)
+            time.sleep(7 * Utility.POLL_TIME)
         else:
             self.inactivityCounter += 1 # put device to low-activity mode
         #print 'inactivityCounter:', self.inactivityCounter, '\tINACTIVE_COUNT:', Utility.INACTIVE_COUNT
