@@ -44,22 +44,30 @@ def camera_filenames_to_file(outputFileName=None):
     print "Filenames to file"
     if outputFileName is None:
         raise Exception('camera_filenames_to_file:  missing file name parameter')
-    if not os.path.isfile(outputFileName):
-        open(outputFileName, 'w+').close()
-    copyfile(Utility.OLD_PICS_FILE_NAME, (Utility.OLD_PICS_FILE_NAME + ".bak"))
+    __ensureExists(outputFileName)
+    #if not os.path.isfile(outputFileName):
+        #open(outputFileName, 'w+').close()
+    #__ensureExists(Utility.OLD_PICS_FILE_NAME)
+    copyfile(outputFileName, (outputFileName + ".bak"))
     
     with open(outputFileName, 'w+') as outFile:
         try:
             #outputFileArg = '>' + outputFileName
             subprocess.check_call(['gphoto2', '-L'], stdout=outFile) #shell=False
-            os.remove(Utility.OLD_PICS_FILE_NAME + ".bak") # remove the backup file after try
+            os.remove(outputFileName + ".bak") # remove the backup file after try
         except subprocess.CalledProcessError:
             print 'Camera is either not connected or not supported' #There is no error in this case. We get the proper outputfile
-            copyfile((Utility.OLD_PICS_FILE_NAME + ".bak"), Utility.OLD_PICS_FILE_NAME)
-            os.remove(Utility.OLD_PICS_FILE_NAME + ".bak") # remove the backup file after try
+            copyfile((outputFileName + ".bak"), outputFileName)
+            os.remove(outputFileName + ".bak") # remove the backup file after try
             raise Exception('Failed to pull image list from camera')
         outFile.close()
         
+def __ensureExists(filename=None):
+    if filename is None:
+        raise Exception('__ensureExists:  missing filename string parameter.')
+    if not os.path.isfile(filename):
+        open(filename, 'w+').close()
+    
 def __getImageNumber(line=None):
     if line is None:
         raise Exception('getImageNumber:  missing line string parameter')
@@ -76,18 +84,16 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
         raise Exception('downloadNewImages:  missing file name parameter')
     # Pythonic diff logic
     oldImageSet = set()
-    if not os.path.isfile(fileNameOld):
-        f = open(fileNameOld, 'w+')
-        f.close()
+    __ensureExists(fileNameOld)
+    #if not os.path.isfile(fileNameOld):
+        #f = open(fileNameOld, 'w+')
+        #f.close()
     f = open(fileNameOld, 'r+')
     for line in f:
         oldImageSet.add(line)
     f.close()
     
-    
-    if not os.path.isfile(fileNameOld):
-         f = open(fileNameNew, 'w+')
-         f.close()
+    __ensureExists(fileNameNew)
     f = open(fileNameNew, 'r+')
     newImageSet = set()
     for line in f:
