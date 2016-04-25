@@ -101,7 +101,7 @@ class FrontEnd(object):
         topFrame = Frame(root)
         topFrame.pack()
         #information for Upload Photos (continuous)
-        self.startButton = Button(topFrame, text="Start\nUpload", width=8, height=12, bg="orange", fg="white", font = "Verdana 12")
+        self.startButton = Button(topFrame, text="Start\nUpload", width=8, height=13, bg="orange", fg="white", font = "Verdana 12")
         self.startButton.bind("<Button-1>", self.startUpload)
         
         #information for button2
@@ -115,14 +115,23 @@ class FrontEnd(object):
         self.resetButtion = Button(topFrame, text="Restart", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
         self.resetButtion.bind("<Button-1>", self.resetFunc)
     
-        self.powerOffButton = Button(topFrame, text="Power\nOff", width=8, height=6, fg="white", font="Verdana 12")
+        self.powerOffButton = Button(topFrame, text="Power\nOff", width=8, height=6, bg="orange", fg="white", font="Verdana 12")
     
         #pack all information for the buttons 
+        '''
         self.startButton.pack(side=LEFT, anchor=W)
-        self.powerOffButton.pack(side=TOP, anchor=E)
-        self.resetButtion.pack(side=BOTTOM, anchor=E)
         self.internetLabel.pack(side=TOP, anchor=NW)
         self.statusLabel.pack(side=BOTTOM, anchor=SW)
+        self.powerOffButton.pack(side=TOP, anchor=NE)
+        self.resetButtion.pack(side=BOTTOM, anchor=SE)
+        '''
+        self.startButton.grid(column=0, rowspan=2)
+        self.internetLabel.grid(row=0, column=1)
+        self.statusLabel.grid(row=1, column=1)
+        self.powerOffButton.grid(row=0, column=2)
+        self.resetButtion.grid(row=1, column=2)
+        
+
         return root
 
     def run(self):
