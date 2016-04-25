@@ -108,16 +108,19 @@ class FrontEnd(object):
         self.internetLabel = Label(topFrame, text="Checking\nFor\nInternet", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
         #self.button2 = Button(topFrame, text="File Explorer", width=14, height=12, bg="orange", fg="white", font = "Verdana 12")
         #self.button2.bind("<Button-1>", self.FileExplorer)
+        self.statusLabel = Label(topFrame, text="Starting\nUp", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
         
         #information for button3
-        self.resetButtion = Button(topFrame, text="Restart", width=8, height=12, bg="orange", fg="white", font = "Verdana 12")
-        self.resetButtion.bind("<Button-1>", self.resetFunc)
         
-        self.statusLabel = Label(topFrame, text="Starting\nUp", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
+        self.resetButtion = Button(topFrame, text="Restart", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
+        self.resetButtion.bind("<Button-1>", self.resetFunc)
+    
+        self.powerOffButton = Button(topFrame, text="Power\nOff", width=8, height=6, fg="white", font="Verdana 12")
     
         #pack all information for the buttons 
         self.startButton.pack(side=LEFT, anchor=W)
-        self.resetButtion.pack(side=RIGHT, anchor=E)
+        self.powerOffButton.pack(side=TOP, anchor=E)
+        self.resetButtion.pack(side=BOTTOM, anchor=E)
         self.internetLabel.pack(side=TOP, anchor=NW)
         self.statusLabel.pack(side=BOTTOM, anchor=SW)
         return root
