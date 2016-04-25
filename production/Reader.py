@@ -85,7 +85,7 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
     f.close()
     
     
-    if not os.path.isfile(fileNameOld):
+    if not os.path.isfile(fileNameNew):
          f = open(fileNameNew, 'w+')
          f.close()
     f = open(fileNameNew, 'r+')
