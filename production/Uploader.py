@@ -48,7 +48,7 @@ class UploadWorker(Process):
                     print "Upload failed for local file " + self.localName + ", Dropbox replied with: " + dropResponse
                     self.errorQueue.put(self.localName)
         except IOError as localError:
-            print "Error uploading " + self.localName + ": I/O error(" + localError.errno + "): " + localError.strerror
+            print "Error uploading " + self.localName + ": I/O error(" + str(localError.errno) + "): " + localError.strerror
             self.errorQueue.put(self.localName)
         print "upload complete for", self.localName
 
