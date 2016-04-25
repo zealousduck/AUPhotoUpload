@@ -102,13 +102,16 @@ def downloadNewImages(fileNameOld=None,fileNameNew=None):
     newImageSet.difference_update(oldImageSet) # those in New not in Old
     #diff = set(imageListNew).difference(set(imageListOld)) 
     # parse diff for valid image numbers
+    commandArg = ""
     for line in newImageSet:
         imgNumber = __getImageNumber(line)
         if (imgNumber):
-            try:
-                # download those images found in diff
-                subprocess.check_output(['gphoto2','--get-file', imgNumber])
-            except subprocess.CalledProcessError:
-                print 'Camera is either not connected or not supported'
-                raise Exception('Failed to download images from camera')
+            commandArg += imgNumber + ','
+    commandArg = commandArg[:-1] #Remove trailing ','
+    try:
+        # download those images found in diff
+        subprocess.check_output(['gphoto2','--get-file', commandArg])
+    except subprocess.CalledProcessError:
+        print 'Camera is either not connected or not supported'
+        raise Exception('Failed to download images from camera')
                 
