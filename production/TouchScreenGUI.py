@@ -86,7 +86,8 @@ class FrontEnd(object):
     def resetFunc(self, event):
         print("Test for script to reset")
         self.queue.put(Utility.QMSG_SETTINGS)
-        os.system("killall python")     
+        #os.system("killall python")     
+        os.system("/home/pi/AUPhotoUpload/production/tempRestart.sh")
     
     def TkSetup(self):
         from Tkinter import *
