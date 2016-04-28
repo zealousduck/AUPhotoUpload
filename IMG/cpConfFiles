@@ -1,0 +1,12 @@
+#!/bin/bash
+## This script is for copying the photoUpload.cfg file with users dropbox
+## info to the AUPhotoUpload application folder and for copying the wifi
+## config files into its proper folder. This is to compliment the Companion
+## application.
+
+## move the wifi conf file to the proper location. We need to to keep this in 
+## /boot/conf or we will lose user wifi info
+cp /boot/confFiles/wpa_supplicant.conf /etc/wpa_supplicant
+
+## This will copy the config file with new dropbox info. 
+cp /boot/confFiles/photoUpload.cfg /home/(root)/AUPhotoUpload/production
