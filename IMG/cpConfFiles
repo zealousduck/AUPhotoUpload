@@ -20,4 +20,8 @@
 sudo cp /boot/confFile/wpa_supplicant.conf /etc/wpa_supplicant
 
 ## This will copy the config file with new dropbox info. 
-sudo cp /boot/confFile/photoUpload.cfg /home/(root)/AUPhotoUpload/production
+sudo cp /boot/confFile/photoUpload.cfg /home/pi/AUPhotoUpload/production
+
+## Force wifi to restart with new wireless info
+sudo ifdown wlan0
+sudo ifup wlan0
