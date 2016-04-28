@@ -87,13 +87,13 @@ class FrontEnd(object):
     def resetFunc(self, event):
         print("Test for script to reset")
         self.queue.put(Utility.QMSG_SETTINGS)
-        os.system("killall python")
+        os.system("./appRestart.sh")
         
     def powerOffFunc(self, event):
         print("Test confirm")
         self.queue.put(Utility.QMSG_SETTINGS)
-        os.system("poweroff") 
-        #os.system("sudo shutdown -h now")         
+        #os.system("poweroff") #Used for testing in linux machines that do not have theyre users as root
+        os.system("sudo shutdown -h now") # User  must be set up as root or function will fail  
     
     def TkSetup(self):
         #from Tkinter import *
