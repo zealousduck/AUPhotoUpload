@@ -24,18 +24,19 @@ class Configurer(object):
         return self     # return self to allow call chaining
     
     def revertToDefaults(self):
-        if not os.path.isfile(Utility.DEFAULT_CONFIG):
-            self.config.add_section('directories')
-            self.config.add_section('dropboxinfo')
-            self.config.add_section('carddata')
-            self.config.set('directories', 'imagedirectory', '')   # current
-            self.config.set('dropboxinfo', 'key', '')
-            self.config.set('dropboxinfo', 'secret', '')
-            self.config.set('dropboxinfo', 'accesstoken', '')
-            self.config.set('carddata', 'recentcardid', 00000000)
-            self.saveSettings('photoUploadDefaults.cfg')
+        pass
+        #if not os.path.isfile(Utility.DEFAULT_CONFIG):
+        #    self.config.add_section('directories')
+        #    self.config.add_section('dropboxinfo')
+        #    self.config.add_section('carddata')
+        #    self.config.set('directories', 'imagedirectory', '')   # current
+        #    self.config.set('dropboxinfo', 'key', '')
+        #    self.config.set('dropboxinfo', 'secret', '')
+        #    self.config.set('dropboxinfo', 'accesstoken', '')
+        #    self.config.set('carddata', 'recentcardid', 00000000)
+        #    self.saveSettings('photoUploadDefaults.cfg')
         # copyfile completely replaces the old file
-        copyfile(Utility.DEFAULT_CONFIG, Utility.CONFIG_FILE_NAME)
+        #copyfile(Utility.DEFAULT_CONFIG, Utility.CONFIG_FILE_NAME)
             
     def saveSettings(self, name=None):
         if name is None:
