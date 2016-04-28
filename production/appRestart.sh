@@ -7,4 +7,4 @@ killall gphoto2 #&>/dev/null &
 killall python #&>/dev/null &
 
 #Restart the application
-python /home/chris/workspace/AUPhotoUpload/production/Supervisor.py & #&>/dev/null &
+python /home/pi/AUPhotoUpload/production/Supervisor.py & #&>/dev/null &
