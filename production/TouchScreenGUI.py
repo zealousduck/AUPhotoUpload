@@ -87,7 +87,8 @@ class FrontEnd(object):
     def resetFunc(self, event):
         print("Test for script to reset")
         self.queue.put(Utility.QMSG_SETTINGS)
-        os.system("./appRestart.sh")
+        #os.system("./appRestart.sh")
+        os.system("sudo reboot")
         
     def powerOffFunc(self, event):
         print("Test confirm")
