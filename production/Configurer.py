@@ -37,6 +37,19 @@ class Configurer(object):
         #    self.saveSettings('photoUploadDefaults.cfg')
         # copyfile completely replaces the old file
         #copyfile(Utility.DEFAULT_CONFIG, Utility.CONFIG_FILE_NAME)
+    def revertToDefaults2(self):
+        if not os.path.isfile(Utility.DEFAULT_CONFIG):
+            self.config.add_section('directories')
+            self.config.add_section('dropboxinfo')
+            self.config.add_section('carddata')
+            self.config.set('directories', 'imagedirectory', '_photo_upload_img_directory')   # current
+            self.config.set('dropboxinfo', 'key', 'kpwogxeclcczgmf')
+            self.config.set('dropboxinfo', 'secret', 'tq1fl93eraqbh97')
+            self.config.set('dropboxinfo', 'accesstoken', 'n0d7CWbJI0AAAAAAAAAACHuj83rJmyPJsFveoeZore8O7xctu8NfaC0EwnEiWB7I')
+            self.config.set('carddata', 'recentcardid', 00000000)
+            self.saveSettings('photoUploadDefaults.cfg')
+        # copyfile completely replaces the old file
+        copyfile(Utility.DEFAULT_CONFIG, Utility.CONFIG_FILE_NAME)
             
     def saveSettings(self, name=None):
         if name is None:
@@ -46,6 +59,6 @@ class Configurer(object):
             configFile.close()
             
 if __name__ == '__main__':
-    Configurer().revertToDefaults()
+    Configurer().revertToDefaults2()
     print Utility.CONFIG_FILE_NAME, "reverted to default values"
     
