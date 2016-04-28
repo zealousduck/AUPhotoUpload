@@ -4,6 +4,17 @@
 ## config files into its proper folder. This is to compliment the Companion
 ## application.
 
+### BEGIN INIT INFO
+# Provides:          asplashscreen
+# Required-Start:
+# Required-Stop:
+# Should-Start:      
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Show custom splashscreen
+# Description:       Show custom splashscreen
+### END INIT INFO
+
 ## move the wifi conf file to the proper location. We need to to keep this in 
 ## /boot/conf or we will lose user wifi info
 cp /boot/confFiles/wpa_supplicant.conf /etc/wpa_supplicant
