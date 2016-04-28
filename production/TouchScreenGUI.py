@@ -7,6 +7,7 @@ import os
 import PhotoUploadUtility as Utility
 from multiprocessing import Queue
 from Tkconstants import RIGHT
+from Tkinter import *
 
 
 class FrontEnd(object):
@@ -86,10 +87,16 @@ class FrontEnd(object):
     def resetFunc(self, event):
         print("Test for script to reset")
         self.queue.put(Utility.QMSG_SETTINGS)
-        os.system("killall python")     
+        os.system("killall python")
+        
+    def powerOffFunc(self, event):
+        print("Test confirm")
+        self.queue.put(Utility.QMSG_SETTINGS)
+        os.system("poweroff") 
+        #os.system("sudo shutdown -h now")         
     
     def TkSetup(self):
-        from Tkinter import *
+        #from Tkinter import *
         root = Tk()
         root.geometry("320x240")
         root.overrideredirect(1)
@@ -110,16 +117,27 @@ class FrontEnd(object):
         #self.button2.bind("<Button-1>", self.FileExplorer)
         
         #information for button3
-        self.resetButtion = Button(topFrame, text="Restart", width=8, height=12, bg="orange", fg="white", font = "Verdana 12")
+        self.resetButtion = Button(topFrame, text="Restart", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
         self.resetButtion.bind("<Button-1>", self.resetFunc)
         
         self.statusLabel = Label(topFrame, text="Starting\nUp", width=8, height=6, bg="orange", fg="white", font = "Verdana 12")
-    
+        
+        self.powerOffButton = Button(topFrame, text="Power\nOff", width=8, height=6, bg="orange", fg="white", font="Verdana 12")
+        self.powerOffButton.bind("<Button-1>", self.powerOffFunc)
+        
         #pack all information for the buttons 
-        self.startButton.pack(side=LEFT, anchor=W)
-        self.resetButtion.pack(side=RIGHT, anchor=E)
-        self.internetLabel.pack(side=TOP, anchor=NW)
-        self.statusLabel.pack(side=BOTTOM, anchor=SW)
+#         self.startButton.pack(side=LEFT, anchor=W)
+#         self.resetButtion.pack(side=RIGHT, anchor=E)
+#         self.internetLabel.pack(side=TOP, anchor=NW)
+#         self.statusLabel.pack(side=BOTTOM, anchor=SW)
+#         return root
+    
+        
+        self.startButton.grid(column=0, rowspan=2)
+        self.internetLabel.grid(row=0, column=1)
+        self.statusLabel.grid(row=1, column=1)
+        self.powerOffButton.grid(row=0, column=2)
+        self.resetButtion.grid(row=1, column=2)
         return root
 
     def run(self):
